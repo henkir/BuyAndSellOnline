@@ -6,4 +6,4 @@ BuyAndSellOnline is a web 2.0 site using AJAX to provide a rich user experience.
 User login is handled with the OpenID API providing good security, and payments are handled with the PayPal API.
 
 # Setup
-To get the website going, put the entire directory structure inside a directory that is accessible by the web server (probably www, www-pub or something like that). Then create a MySQL database and a user for the website to use. The details can be found near the bottom in the file BuyAndSellOnline/app/config/database.php where you can also change them.
+To get the website going, put the entire directory structure inside a directory that is accessible by the web server (probably www, www-pub or something like that). If you do not put it in the web root, but in a sub directory, you need to change the lines specifying the CSS files in BuyAndSellOnline/app/views/layouts/default.ctp to the appropriate paths. Then create a MySQL database and a user for the website to use. The details can be found near the bottom in the file BuyAndSellOnline/app/config/database.php where you can also change them.
