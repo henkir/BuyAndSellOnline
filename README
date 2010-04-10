@@ -1,0 +1,9 @@
+BuyAndSellOnline
+Authors: Robin Axelsson & Henrik Holmberg
+
+# Description
+BuyAndSellOnline is a web 2.0 site using AJAX to provide a rich user experience. Users can login and add items they want to sell, or they can purchase items other users have added. They can search, filter and order the items that are for sale. The JavaScript frameworks Prototype and Scriptaculous are used on the client side as well as the CSS framework Blueprint CSS. On the server side the CakePHP framework is used. PHP is obviously the server side language, and MySQL is used for the database.
+User login is handled with the OpenID API providing good security, and payments are handled with the PayPal API.
+
+# Setup
+To get the website going, put the entire directory structure inside a directory that is accessible by the web server (probably www, www-pub or something like that). Then create a MySQL database and a user for the website to use. The details can be found near the bottom in the file BuyAndSellOnline/app/config/database.php where you can also change them.
