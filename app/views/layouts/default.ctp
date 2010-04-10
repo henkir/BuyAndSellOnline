@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
         <title><?php echo $title_for_layout; ?></title>
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/BuyAndSellOnline/favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" href="/BuyAndSellOnline/css/blueprint/screen.css" type="text/css" media="screen, projection" />
         <link rel="stylesheet" href="/BuyAndSellOnline/css/blueprint/print.css" type="text/css" media="print" />	
         <!--[if lt IE 8]><link rel="stylesheet" href="/BuyAndSellOnline/css/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
