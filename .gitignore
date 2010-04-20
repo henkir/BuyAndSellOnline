@@ -1,2 +1,5 @@
 app/tmp
 *~
+.project
+.buildpath
+.settings/
