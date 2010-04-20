@@ -2,6 +2,6 @@
 class User extends AppModel {
     var $name = 'User';
     var $belongsTo = array('Group');
-    var $hasMany = array('Item');
+    var $hasMany = array('Item', 'Purchase');
 }
 ?>

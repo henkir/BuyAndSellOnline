@@ -1,7 +1,7 @@
 <?php
 class Item extends AppModel {
     var $name = 'Item';
-    var $belongsTo = array('User', 'Category');
+    var $belongsTo = array('User', 'Category', 'Purchase');
     var $hasMany = array('Tag' => array(
                                     'className' => 'Tag',
                                     'foreignKey' => 'item_id',

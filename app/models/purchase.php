@@ -1,7 +1,7 @@
 <?php
 class Purchase extends AppModel {
     var $name = 'Purchase';
-    var $hasOne = array('User', 'Item');
+    var $belongsTo = array('User', 'Item');
     
 }
 ?>

@@ -56,14 +56,14 @@ CREATE TABLE `items` (  `id` INT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
                         ON UPDATE CASCADE ON DELETE RESTRICT
                         ) ENGINE=InnoDB;
 -- Create tags, that describe an item.
-CREATE TABLE `items_tags` ( `id` INT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
-                            `item_id` INT(8) UNSIGNED NOT NULL,
-                            `tag` VARCHAR(20) NOT NULL,
-                            PRIMARY KEY(`id`),
-                            CONSTRAINT `tags_item_fk`
-                            FOREIGN KEY(`item_id`) REFERENCES `items`(`id`)
-                            ON UPDATE CASCADE ON DELETE CASCADE
-                            ) ENGINE=InnoDB;
+CREATE TABLE `tags` (   `id` INT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
+                        `item_id` INT(8) UNSIGNED NOT NULL,
+                        `tag` VARCHAR(20) NOT NULL,
+                        PRIMARY KEY(`id`),
+                        CONSTRAINT `tags_item_fk`
+                        FOREIGN KEY(`item_id`) REFERENCES `items`(`id`)
+                        ON UPDATE CASCADE ON DELETE CASCADE
+                        ) ENGINE=InnoDB;
 -- Create allowed locations, which specify which locations a user is allowed to
 -- live in to purchase an item.
 -- CREATE TABLE `items_locations` (    `id` INT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
