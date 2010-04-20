@@ -1,0 +1,5 @@
+1   Computers
+2   Cellphones
+3   Furniture
+4   Art
+5   Other

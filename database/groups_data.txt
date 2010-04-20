@@ -1,0 +1,3 @@
+0   Member
+1   Moderator
+2   Administrator
