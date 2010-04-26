@@ -1,6 +1,3 @@
-<script type="text/javascript">
-    var hover = [];
-</script>
 
 <?php
 
@@ -35,7 +32,7 @@ foreach ($items as $item) {
             echo $mouseOut;
             ?>">
         <h4><?php
-            echo $item['Item']['title'];
+            echo $item['Item']['name'];
             ?></h4>
         <p>
     <?php

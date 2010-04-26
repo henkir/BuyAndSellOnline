@@ -33,7 +33,7 @@ $relativeUrl = '/BuyAndSellOnline';
                 <div><a href="">Home</a></div>
                 <div><a href="">Search</a></div>
                 <div><a href="">Filter</a></div>
-                <div><a href="">Login</a></div>
+                <div><?php echo $ajax->link('Login', array('controller' => 'users', 'action' => 'login'), array('update' => 'content')); ?></div>
                 <div><a href="">Profile</a></div>
                 <div><a href="">Sell</a></div>
             </div>

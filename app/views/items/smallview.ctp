@@ -5,21 +5,21 @@ Configure::write('debug', 0);
                     array('url' => array('controller' => 'items',
                         'action' => 'preview',
                         $item['Item']['id']),
-                        'update' => 'item-'.$item['Item']['id'],
+                        'update' => 'item'.$item['Item']['id'],
                         // Doesn't show.
                         'loaded' => 'Effect.Opacity(\'item-'.$item['Item']['id'].'\')'));
     $click = $ajax->remoteFunction(
                     array('url' => array('controller' => 'items',
                         'action' => 'view',
                         $item['Item']['id']),
-                        'update' => 'item-'.$item['Item']['id'],
+                        'update' => 'item'.$item['Item']['id'],
                         'loaded' => 'Effect.BlindDown(\'item-'.$item['Item']['id'].'\')'));
 ?>
-
+    <div id='item<?php echo $item['Item']['id']; ?>'>
         <h4 onmouseover="<?php
                 echo $mouseOver;
                 ?>" onclick="<?php echo $click; ?>">
-                <?php echo $item['Item']['title']; ?></h4>
+                <?php echo $item['Item']['name']; ?></h4>
         <p onmouseover="<?php
                 echo $mouseOver;
                 ?>" onclick="<?php echo $click; ?>">
@@ -34,3 +34,4 @@ echo $description;
                 echo $mouseOver;
                 ?>" onclick="<?php echo $click; ?>">
                 <?php echo $item['Item']['price']; ?></p>
+    </div>

@@ -29,12 +29,6 @@ $relativeUrl = '/BuyAndSellOnline';
                 </div>
             </div>
             <div id="menu" class="span-4">
-                <div><a href="">Home</a></div>
-                <div><a href="">Search</a></div>
-                <div><a href="">Filter</a></div>
-                <div><a href="">Login</a></div>
-                <div><a href="">Profile</a></div>
-                <div><a href="">Sell</a></div>
             </div>
             <div id="content" class="span-20 last">
                 <?php echo $content_for_layout; ?>
