@@ -1,7 +1,9 @@
 <?php
-Configure::write('debug', 0);
+$id = $item['Item']['id'];
+
+$click = $ajax->link($item['Item']['name'], array('action' => 'index', $id), array('update' => 'item'.$id));
 ?>
-<h3><?php echo $item['Item']['title']; ?></h3>
+<h3><?php echo $click; ?></h3>
 <span class="dateCreated"><?php echo $item['Item']['created']; ?></span>
 <?php if ($item['Item']['modified']) { ?>
 <span class="dateModified"><?php echo $item['Item']['modified']; ?></span>

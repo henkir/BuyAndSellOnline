@@ -29,6 +29,24 @@ $relativeUrl = '/BuyAndSellOnline';
                 </div>
             </div>
             <div id="menu" class="span-4">
+	    	<ul>
+<?php
+echo '<li>', $ajax->link('Home', array('controller' => 'pages', 'action' => 'display'), array('update' => 'content')), '</li>';
+echo '<li>', $ajax->link('Browse', array('controller' => 'items', 'action' => 'index'), array('update' => 'content')), '</li>';
+echo '<li>', $ajax->link('Search', array('controller' => 'pages', 'action' => 'display'), array('update' => 'content')), '</li>';
+
+if ($session->read('Auth.User.id')) {
+   // User logged in
+ 
+   if (true /* is_moderator($session->read('Auth.User.id')) */) {
+      // User is moderator
+      if (true /* is_admin($session->read('Auth.User.id')) */) {
+      	 // User is administrator
+      }
+   }
+}
+?>
+	    	<?php echo $session->flash(); ?>
                 <?php echo $ajax->link('test', array('controller' => 'categories', 'action' => 'index'), array('update' => 'content')); ?>
                 <div><a href="">Home</a></div>
                 <div><a href="">Search</a></div>
@@ -37,9 +55,10 @@ $relativeUrl = '/BuyAndSellOnline';
                 <div><a href="">Profile</a></div>
                 <div><a href="">Sell</a></div>
             </div>
-            <div id="content" class="span-20 last">
-                <?php echo $content_for_layout; ?>
-
+	    <div id="main" class="span-20 last">
+            	<div id="content">
+                     <?php echo $content_for_layout; ?>
+	        </div>
             </div>
             <div id="footer" class="span-24 last"></div>
         </div>

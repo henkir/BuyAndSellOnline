@@ -29,10 +29,30 @@ $relativeUrl = '/BuyAndSellOnline';
                 </div>
             </div>
             <div id="menu" class="span-4">
+	    	<ul>
+<?php
+echo '<li>', $ajax->link('Home', array('controller' => 'pages', 'action' => 'display'), array('update' => 'content')), '</li>';
+echo '<li>', $ajax->link('Browse', array('controller' => 'items', 'action' => 'index'), array('update' => 'content')), '</li>';
+echo '<li>', $ajax->link('Search', array('controller' => 'pages', 'action' => 'display'), array('update' => 'content')), '</li>';
+
+if ($session->read('Auth.User.id')) {
+   // User logged in
+ 
+   if (true /* is_moderator($session->read('Auth.User.id')) */) {
+      // User is moderator
+      if (true /* is_admin($session->read('Auth.User.id')) */) {
+      	 // User is administrator
+	 echo '<li>', $ajax->link('Admin panel', array('controller' => 'pages', 'action' => 'display'), array('update' => 'content')), '</li>';
+      }
+   }
+   echo '<li>', $ajax->link('Logout', array('controller' => 'users', 'action' => 'logout'), array('update' => 'content')), '</li>';
+} else {
+   echo '<li>', $ajax->link('Login', array('controller' => 'users', 'action' => 'login'), array('update' => 'content')), '</li>';
+}
+?>
             </div>
             <div id="content" class="span-20 last">
                 <?php echo $content_for_layout; ?>
-
             </div>
             <div id="footer" class="span-24 last"></div>
         </div>

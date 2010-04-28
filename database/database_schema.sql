@@ -44,9 +44,13 @@ CREATE TABLE `users` (  `id` integer auto_increment,
 --                                    ON UPDATE CASCADE ON DELETE CASCADE
  --                                   ) ENGINE=InnoDB;
 -- Create categories, that items can belong to.
-CREATE TABLE `categories` ( `id` INT(2) NOT NULL,
+CREATE TABLE `categories` ( `id` INT(2) NOT NULL AUTO_INCREMENT,
                             `name` VARCHAR(20) NOT NULL UNIQUE,
-                            PRIMARY KEY(`id`)
+			    `category_id` INT(2) DEFAULT NULL,
+                            PRIMARY KEY(`id`),
+			    CONSTRAINT `categories_category_fk`
+			    FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`)
+			    ON UPDATE CASCADE ON DELETE CASCADE
                             ) ENGINE=InnoDB;
 -- Create items, that has information about items a user added.
 CREATE TABLE `items` (  `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -58,6 +62,8 @@ CREATE TABLE `items` (  `id` INTEGER NOT NULL AUTO_INCREMENT,
                         `sold` BOOLEAN NOT NULL DEFAULT FALSE,
                         `paypal` VARCHAR(100) NOT NULL,
                         `picture` BLOB DEFAULT NULL,
+			`created` DATETIME NOT NULL,
+			`modified` DATETIME,
                         PRIMARY KEY(`id`),
                         CONSTRAINT `items_user_fk`
                         FOREIGN KEY(`user_id`) REFERENCES `users`(`id`)

@@ -18,6 +18,34 @@ class UsersController extends AppController {
         $this->set('user', $this->User->read());
     }
     
+    function edit($id) {
+	$this->set('users', $this->User->find('all'));
+	if (!empty($this->data)) {
+	    if ($this->User->save($this->data)) {
+		$this->Session->setFlash('The user has been saved.');
+	    } else {
+		$this->Session->setFlash('Failed saving the user.');
+	    }
+	}
+    }
+
+    function add() {
+	$this->set('users', $this->User->find('all'));
+	if (!empty($this->data)) {
+	    if ($this->User->save($this->data)) {
+		$this->Session->setFlash('The user has been saved.');
+	    } else {
+		$this->Session->setFlash('Failed saving the user.');
+	    }
+	}
+    }
+
+    function delete($id) {
+	$this->User->delete($id);
+	$this->Session->setFlash('The user has been deleted.');
+	$this->redirect(array('action' => 'edit'));
+    }
+
     function login() {
 
     }

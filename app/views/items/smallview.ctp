@@ -1,28 +1,11 @@
 <?php
 Configure::write('debug', 0);
 
-    $mouseOver = $ajax->remoteFunction(
-                    array('url' => array('controller' => 'items',
-                        'action' => 'preview',
-                        $item['Item']['id']),
-                        'update' => 'item'.$item['Item']['id'],
-                        // Doesn't show.
-                        'loaded' => 'Effect.Opacity(\'item-'.$item['Item']['id'].'\')'));
-    $click = $ajax->remoteFunction(
-                    array('url' => array('controller' => 'items',
-                        'action' => 'view',
-                        $item['Item']['id']),
-                        'update' => 'item'.$item['Item']['id'],
-                        'loaded' => 'Effect.BlindDown(\'item-'.$item['Item']['id'].'\')'));
+$id = $item['Item']['id'];
+$click = $ajax->link($item['Item']['name'], array('action' => 'view', $id), array('update' => 'item'.$id));
 ?>
-    <div id='item<?php echo $item['Item']['id']; ?>'>
-        <h4 onmouseover="<?php
-                echo $mouseOver;
-                ?>" onclick="<?php echo $click; ?>">
-                <?php echo $item['Item']['name']; ?></h4>
-        <p onmouseover="<?php
-                echo $mouseOver;
-                ?>" onclick="<?php echo $click; ?>">
+<h4><?php echo $click; ?></h4>
+<p>
 <?php
 $description = substr($item['Item']['description'], 0, 5);
 if (strlen($item['Item']['description']) > 5) {
@@ -30,8 +13,5 @@ if (strlen($item['Item']['description']) > 5) {
 }
 echo $description;
 ?></p>
-        <p onmouseover="<?php
-                echo $mouseOver;
-                ?>" onclick="<?php echo $click; ?>">
-                <?php echo $item['Item']['price']; ?></p>
-    </div>
+<p><?php echo $item['Item']['price']; ?></p>
+    

@@ -1,5 +1,5 @@
 <?php
-    $session->flash();
+    //$session->flash();
     echo $form->create('User', array('action' => 'login'));
     echo $form->input('username');
     echo $form->input('password');
