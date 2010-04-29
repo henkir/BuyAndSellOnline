@@ -10,4 +10,8 @@ $click = $ajax->link($item['Item']['name'], array('action' => 'index', $id), arr
 <?php } ?>
 <p><?php echo $item['Item']['description']; ?></p>
 <p><?php echo $item['Item']['price']; ?></p>
-<input type="button" value="Buy" />
+<?php
+if ($session->check('Auth.User.id')) {
+    echo '<input type="button" value="Buy" onclick="'.$ajax->remoteFunction(array('url' => array('controller' => 'items', 'action' => 'buy', $id), 'update' => 'content')).'">';
+}
+?>

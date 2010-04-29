@@ -55,7 +55,7 @@ class AppController extends Controller {
         $this->Auth->authorize = 'actions';
         $this->Auth->actionPath = 'controllers/';
         $this->Auth->loginAction = array('controller' => 'users', 'action' => 'login');
-        $this->Auth->logoutRedirect = array('controller' => 'users', 'action' => 'login');
+        $this->Auth->logoutRedirect = array('controller' => 'pages', 'action' => 'display');
         $this->Auth->loginRedirect = array('controller' => 'items', 'action' => 'index');
         $this->Auth->allowedActions = array('display');
 	$this->Auth->allow('*');

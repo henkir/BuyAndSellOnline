@@ -20,10 +20,7 @@ CREATE TABLE `users` (  `id` integer auto_increment,
                         `first_name` varchar(32),
                         `last_name` varchar(32),
                         `group_id` INT(1) DEFAULT 0,
-                        PRIMARY KEY (`id`),
-                        CONSTRAINT `users_group_fk`
-                        FOREIGN KEY(`group_id`) REFERENCES `groups`(`id`)
-                        ON UPDATE CASCADE ON DELETE RESTRICT
+                        PRIMARY KEY (`id`)
                         ) ENGINE=InnoDB;
 -- Create users, with an id, belonging to a group and living in a location.
 -- CREATE TABLE `users` (  `id` INT(4) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -47,10 +44,7 @@ CREATE TABLE `users` (  `id` integer auto_increment,
 CREATE TABLE `categories` ( `id` INT(2) NOT NULL AUTO_INCREMENT,
                             `name` VARCHAR(20) NOT NULL UNIQUE,
 			    `category_id` INT(2) DEFAULT NULL,
-                            PRIMARY KEY(`id`),
-			    CONSTRAINT `categories_category_fk`
-			    FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`)
-			    ON UPDATE CASCADE ON DELETE CASCADE
+                            PRIMARY KEY(`id`)
                             ) ENGINE=InnoDB;
 -- Create items, that has information about items a user added.
 CREATE TABLE `items` (  `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -64,13 +58,7 @@ CREATE TABLE `items` (  `id` INTEGER NOT NULL AUTO_INCREMENT,
                         `picture` BLOB DEFAULT NULL,
 			`created` DATETIME NOT NULL,
 			`modified` DATETIME,
-                        PRIMARY KEY(`id`),
-                        CONSTRAINT `items_user_fk`
-                        FOREIGN KEY(`user_id`) REFERENCES `users`(`id`)
-                        ON UPDATE CASCADE ON DELETE CASCADE,
-                        CONSTRAINT `items_category_fk`
-                        FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`)
-                        ON UPDATE CASCADE ON DELETE RESTRICT
+                        PRIMARY KEY(`id`)
                         ) ENGINE=InnoDB;
 -- Create tags, that describe an item.
 CREATE TABLE `tags` (   `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -81,13 +69,7 @@ CREATE TABLE `tags` (   `id` INTEGER NOT NULL AUTO_INCREMENT,
 CREATE TABLE `items_tags` ( `id` INTEGER NOT NULL AUTO_INCREMENT,
                             `item_id` INTEGER NOT NULL,
                             `tag_id` INTEGER NOT NULL,
-                            PRIMARY KEY(`id`),
-                            CONSTRAINT `items_tags_item_fk`
-                            FOREIGN KEY(`item_id`) REFERENCES `items`(`id`)
-                            ON UPDATE CASCADE ON DELETE CASCADE,
-                            CONSTRAINT `items_tags_tag_fk`
-                            FOREIGN KEY(`tag_id`) REFERENCES `tags`(`id`)
-                            ON UPDATE CASCADE ON DELETE CASCADE
+                            PRIMARY KEY(`id`)
                         ) ENGINE=InnoDB;
 -- Create allowed locations, which specify which locations a user is allowed to
 -- live in to purchase an item.
@@ -108,13 +90,7 @@ CREATE TABLE `purchases` (  `id` INTEGER NOT NULL AUTO_INCREMENT,
                             `user_id` INTEGER,
                             `item_id` INTEGER,
                             `confirmed` BOOLEAN NOT NULL DEFAULT FALSE,
-                            PRIMARY KEY(`id`),
-                            CONSTRAINT `purchases_user_fk`
-                            FOREIGN KEY(`user_id`) REFERENCES `users`(`id`)
-                            ON UPDATE CASCADE ON DELETE SET NULL,
-                            CONSTRAINT `purchases_item_fk`
-                            FOREIGN KEY(`item_id`) REFERENCES `items`(`id`)
-                            ON UPDATE CASCADE ON DELETE SET NULL
+                            PRIMARY KEY(`id`)
                             ) ENGINE=InnoDB;
 -- Create ACL tables
 SOURCE db_acl.sql;

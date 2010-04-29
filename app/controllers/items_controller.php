@@ -56,4 +56,12 @@ class ItemsController extends AppController {
 	$this->redirect(array('action' => 'edit'));
     }
 
+    function buy($id) {
+
+    }
+
+    function search() {
+
+    }
+
 }
