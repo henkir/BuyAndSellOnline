@@ -2,7 +2,7 @@
 class UsersController extends AppController {
 
     var $name = 'Users';
-    var $components = array('Auth', 'Acl');
+    var $components = array('Auth', 'Acl', 'Openid');
 
     function beforeFilter() {
         parent::beforeFilter();
@@ -47,7 +47,32 @@ class UsersController extends AppController {
     }
 
     function login() {
+    	$returnTo = 'http://'.'85.24.196.11'.'/BuyAndSellOnline/users/login';
 
+        if (!empty($this->data)) {
+            try {
+                $this->Openid->authenticate($this->data['OpenidUrl']['openid'], $returnTo, 'http://'.'85.24.196.11'.'/BuyAndSellOnline');
+            } catch (InvalidArgumentException $e) {
+                $this->setMessage('Invalid OpenID');
+            } catch (Exception $e) {
+                $this->setMessage($e->getMessage());
+            }
+        } elseif (count($_GET) > 1) {
+            $response = $this->Openid->getResponse($returnTo);
+
+            if ($response->status == Auth_OpenID_CANCEL) {
+                $this->setMessage('Verification cancelled');
+            } elseif ($response->status == Auth_OpenID_FAILURE) {
+                $this->setMessage('OpenID verification failed: '.$response->message);
+            } elseif ($response->status == Auth_OpenID_SUCCESS) {
+                echo 'successfully authenticated!';
+                exit;
+            }
+        }
+    }
+
+    private function setMessage($message) {
+        $this->set('message', $message);
     }
     
     function logout() {
