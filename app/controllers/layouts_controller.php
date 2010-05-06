@@ -1,10 +1,13 @@
 <?php
 class LayoutsController extends AppController {
     var $name = 'Layouts';
+    // This controller doesn't use any datasource.
     var $uses = array();
-    var $components = array('Auth');
-    var $helpers = array('Html', 'Javascript', 'Ajax');
     
+    function menu() {
+
+    }
+
 }
 
 ?>

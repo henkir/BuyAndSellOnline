@@ -2,7 +2,9 @@
 class UsersController extends AppController {
 
     var $name = 'Users';
-    var $components = array('Auth', 'Acl', 'Openid');
+    // The IP address of the server. Needed since localhost isn't gonna do us
+    // much good when using OpenID.
+    var $ip = '94.254.42.77';
 
     function beforeFilter() {
         parent::beforeFilter();
@@ -29,15 +31,11 @@ class UsersController extends AppController {
 	}
     }
 
-    function add() {
-	$this->set('users', $this->User->find('all'));
-	if (!empty($this->data)) {
-	    if ($this->User->save($this->data)) {
-		$this->Session->setFlash('The user has been saved.');
-	    } else {
-		$this->Session->setFlash('Failed saving the user.');
-	    }
-	}
+    function add($data) {
+	$this->data['User'] = $data;
+	$this->User->save($this->data);
+	$this->Session->write('User.id', $this->User->getLastInsertID());
+	return $this->User->getLastInsertID();
     }
 
     function delete($id) {
@@ -46,29 +44,58 @@ class UsersController extends AppController {
 	$this->redirect(array('action' => 'edit'));
     }
 
+    // Logs in a user with OpenID.
     function login() {
-    	$returnTo = 'http://'.'85.24.196.11'.'/BuyAndSellOnline/users/login';
+    	$returnTo = 'http://'.$this->ip.Configure::read('relativeUrl').'/users/login';
 
+	// If data isn't empty, try to authenticate user using OpenID.
         if (!empty($this->data)) {
             try {
-                $this->Openid->authenticate($this->data['OpenidUrl']['openid'], $returnTo, 'http://'.'85.24.196.11'.'/BuyAndSellOnline');
+                $this->Openid->authenticate($this->data['OpenidUrl']['openid'], $returnTo, 'http://'.$this->ip.Configure::read('relativeUrl'));
             } catch (InvalidArgumentException $e) {
                 $this->setMessage('Invalid OpenID');
             } catch (Exception $e) {
                 $this->setMessage($e->getMessage());
             }
         } elseif (count($_GET) > 1) {
+	    // Response from OpenID
             $response = $this->Openid->getResponse($returnTo);
-
-            if ($response->status == Auth_OpenID_CANCEL) {
-                $this->setMessage('Verification cancelled');
-            } elseif ($response->status == Auth_OpenID_FAILURE) {
-                $this->setMessage('OpenID verification failed: '.$response->message);
-            } elseif ($response->status == Auth_OpenID_SUCCESS) {
-                echo 'successfully authenticated!';
-                exit;
-            }
+	    $sregResponse = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
+	    $sreg = $sregResponse->contents();
+	    print_r($sregResponse);
+	    $sreg['openid'] = $_GET['openid_identity'];
+	    $this->testUser($sreg);
+	    $this->Session->setFlash('Successfully authenticated!');
+	    $this->redirect('/');
+	    $this->autoRender = false;
         }
+    } 
+
+    // Test if the user has logged in before and log in the user.
+    function testUser($data) {
+	//$data['name'] = $data['fullname'];
+	$test = $this->User->findByOpenid($data['openid']);
+	$return['action'] = 'index';
+
+	if ($test) {
+	    // User has logged in before, recreate data.
+	    $data = array_merge($test['User'], $data);
+	    $this->recreate($data);
+	    $return['id'] = $test['User']['id'];
+	} else {
+	    // First time, add user.
+	    $return['id'] = $this->add($data);
+	    $return['action'] = 'index';
+	}
+	// Finally log in the user.
+	$this->Auth->login($return['id']);
+	//return $return;
+    }
+
+    // Recreate user given data.
+    function recreate($data) {
+	$this->data['User'] = $data;
+	$this->User->save($this->data['User']);
     }
 
     private function setMessage($message) {

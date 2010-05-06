@@ -1,44 +1,13 @@
 <?php
-  /* SVN FILE: $Id$ */
-  /**
-   * Short description for file.
-   *
-   * This file is application-wide controller file. You can put all
-   * application-wide controller-related methods here.
-   *
-   * PHP versions 4 and 5
-   *
-   * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
-   * Copyright 2005-2010, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
-   *
-   * Licensed under The MIT License
-   * Redistributions of files must retain the above copyright notice.
-   *
-   * @filesource
-   * @copyright     Copyright 2005-2010, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
-   * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
-   * @package       cake
-   * @subpackage    cake.app
-   * @since         CakePHP(tm) v 0.2.9
-   * @version       $Revision$
-   * @modifiedby    $LastChangedBy$
-   * @lastmodified  $Date$
-   * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
-   */
-  /**
-   * Short description for class.
-   *
-   * Add your application-wide methods in the class below, your controllers
-   * will inherit them.
-   *
-   * @package       cake
-   * @subpackage    cake.app
-   */
+
 class AppController extends Controller {
     
-    var $components = array('RequestHandler', 'Acl', 'Auth', 'Session');
+    // We load the most common components here so we won't have to do it in all controllers.
+    // TODO: Remove components not used often enough.
+    var $components = array('RequestHandler', 'Acl', 'Auth', 'Session', 'Openid');
+    // We will use these helpers in almost all views.
     var $helpers = array('Html', 'Javascript', 'Ajax');
-    
+
     //Checks if the request was an AJAX request, if so we want no debug prints.
     function checkAjax() {
         if ($this->RequestHandler->isAjax()) {
@@ -50,17 +19,27 @@ class AppController extends Controller {
     }
     
     function beforeFilter() {
+	parent::beforeFilter();
+	// Set the relative URL from the web root directory. Empty if root.
+	Configure::write('relativeUrl', '/BuyAndSellOnline');
         $this->checkAjax();
+	// Set convenience variables for whether a user is logged, moderator or admin.
+	if ($this->Session->check('Auth.User.id')) {
+	    $this->set('loggedIn', true);
+	} else {
+	    $this->set('loggedIn', false);
+	}
         // Set up authorization
         $this->Auth->authorize = 'actions';
         $this->Auth->actionPath = 'controllers/';
         $this->Auth->loginAction = array('controller' => 'users', 'action' => 'login');
         $this->Auth->logoutRedirect = array('controller' => 'pages', 'action' => 'display');
-        $this->Auth->loginRedirect = array('controller' => 'items', 'action' => 'index');
+        $this->Auth->loginRedirect = array('controller' => 'pages', 'action' => 'display');
+	// Always allow display (view that is rendered in the start page).
         $this->Auth->allowedActions = array('display');
+	// TODO: remove this
 	$this->Auth->allow('*');
     }
-    
     
     // Functions for building ACOs ---------------------------------------------------------------
     function build_acl() {

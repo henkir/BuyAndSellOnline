@@ -6,3 +6,9 @@
     color: #2222ee;
     list-style-type: none;
 }
+
+.loginTextbox {
+    background: url('../img/openid.gif') no-repeat;
+    padding-left: 18px;
+    width: 200px;
+}

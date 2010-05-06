@@ -5,13 +5,15 @@
    * the /BuyAndSellOnline directory is in the www root, you just enter an empty
    * string here.
    */
-$relativeUrl = '/BuyAndSellOnline';
+  //$relativeUrl = '/BuyAndSellOnline';
 
 // Variables that simplify customizing the layout depending of the status of the user.
-$loggedIn = $session->check('Auth.User.id');
+
 // TODO: check if a logged in user is a moderator
 $moderator = $loggedIn;
 $admin = $moderator;
+
+$relativeUrl = Configure::read('relativeUrl');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -36,25 +38,10 @@ $admin = $moderator;
                     <a href="<?php echo $relativeUrl; ?>/"><img src="<?php echo $relativeUrl; ?>/img/banner.png" alt="BuyAndSellOnline" style="border:0" /></a>
                 </div>
             </div>
-            <div id="menu" class="span-4">
-	    	<ul>
-<?php
-echo '<li>', $ajax->link('Home', array('controller' => 'pages', 'action' => 'display'), array('update' => 'content')), '</li>';
-echo '<li>', $ajax->link('Browse', array('controller' => 'items', 'action' => 'index'), array('update' => 'content')), '</li>';
-echo '<li>', $ajax->link('Categories', array('controller' => 'categories', 'action' => 'index'), array('update' => 'content')), '</li>';
-echo '<li>', $ajax->link('Search', array('controller' => 'items', 'action' => 'search'), array('update' => 'content')), '</li>';
-
-if ($admin) {
-    echo '<li>', $ajax->link('Admin panel', array('controller' => 'pages', 'action' => 'display'), array('update' => 'content')), '</li>';
- }
-
-if ($loggedIn) {
-    echo '<li>', $ajax->link('Logout', array('controller' => 'users', 'action' => 'logout'), array('update' => 'content')), '</li>';
- } else {
-    echo '<li>', $ajax->link('Login', array('controller' => 'users', 'action' => 'login'), array('update' => 'content')), '</li>';
-}
-?>
-</ul>
+            <div id="menu" class="span-4">	
+                <script type="text/javascript">
+                    new Ajax.Updater('menu', '<?php echo $relativeUrl; ?>/layouts/menu', { method: 'get', evalScripts: true });
+                </script>
             </div>
             <div id="content" class="span-20 last">
                 <?php echo $content_for_layout; ?>
