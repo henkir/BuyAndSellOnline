@@ -11,8 +11,11 @@ To get the website going, put the entire directory structure inside a directory 
     Make sure you are in the BuyAndSellOnline directory.
     Enter: mysql -u root -p
     Then enter your password.
-    Then enter "source database/database_schema.sql" without the quotes.
-    To load data into the tables, enter "source database/database_data.sql" without the quotes.
+    Then enter "source database/init_db.sql".
     To create the MySQL user for CakePHP, enter "source database/create_user.sql" without the quotes.
 
-The MySQL user details can be found near the bottom in the file BuyAndSellOnline/app/config/database.php where you can also change them.
+You need to make sure that the files have the correct permissions. To be sure it will work:
+    Go to the BuyAndSellOnline directory.
+    Type sudo chmod -R 777 app/
+
+This will give the web server access to all the files it may need.
