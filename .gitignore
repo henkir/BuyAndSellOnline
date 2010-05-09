@@ -4,3 +4,4 @@ app/tmp
 .project
 .buildpath
 .settings/
+app/webroot/img/uploads/

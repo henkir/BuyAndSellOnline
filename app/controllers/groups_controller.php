@@ -4,7 +4,7 @@ class GroupsController extends AppController {
 
     function beforeFilter() {
         parent::beforeFilter();
-        
+        // TODO: allow index and view?
     }
 
     function view($id) {
@@ -40,6 +40,22 @@ class GroupsController extends AppController {
 	$this->redirect(array('action' => 'edit'));
     }
 
+    function initGroups() {
+	$groups = array(0 => array('alias' => 'members',
+				   'model' => 'Group',
+				   'foreign_key' => 0),
+			1 => array('alias' => 'moderators',
+				   'model' => 'Group',
+				   'foreign_key' => 1),
+			2 => array('alias' => 'administrators',
+				   'model' => 'Group',
+				   'foreign_key' => 2));
+
+	foreach ($groups as $data) {
+	    $this->Acl->Aro->create();
+	    $this->Acl->Aro->save($data);
+	}
+    }
 
 }
 

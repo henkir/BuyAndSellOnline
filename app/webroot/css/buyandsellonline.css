@@ -12,3 +12,78 @@
     padding-left: 18px;
     width: 200px;
 }
+
+#items {
+    background: #ffffff;
+}
+
+.item {
+    background: #cccccc;
+    padding: 5px;
+    margin: 5px 0px 5px 0px;
+}
+
+.item h4 {
+    margin: 0px;
+}
+
+.item p {
+    color: #000022;
+    margin: 0px;
+}
+
+.item div {
+    font-style: italic;
+}
+
+.item_small_img {
+    float: left;
+    margin: 0px 5px 0px 0px;
+    height: 50px;
+}
+
+.item_img {
+    width: 100%;
+}
+
+.paginator {
+    text-align: center;
+}
+
+div.spinner {
+    float: right;
+}
+
+.sort {
+    height: 28px;
+}
+
+div.input {
+
+}
+
+
+
+.addDiv {
+    text-align: center;
+    width: 600px;
+}
+
+label {
+    font-weight: normal;
+    float: left;
+    margin-right: 5px;
+    margin-top: 6px;
+    text-align: right;
+    width: 120px;
+}
+
+.required label {
+    font-weight: bold;
+}
+
+form.addItem div.submit input {
+    margin-left: 127px;
+    width: 100px;
+}
+

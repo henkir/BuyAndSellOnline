@@ -1,7 +1,9 @@
 <?php
-if (isset($message)) {
-    echo '<p class="error">'.$message.'</p>';
+if ($session->flash()) {
+    echo $session->flash();
  }
+
+echo $html->tag('h2', 'Login');
 if ($loggedIn) {
     echo 'Already logged in.';
  } else {
@@ -10,10 +12,11 @@ if ($loggedIn) {
 		      array('label' => false,
 			    'div' => false,
 			    'class' => 'loginTextbox'));
-    echo $form->submit('Login', array('div' => false));
-    echo $javascript->codeBlock('Form.Element.focus(\'OpenidUrlOpenid\');');
+    echo $form->submit('Login', array('div' => false, 'id' => 'UserLoginSubmit'));
+    echo $javascript->event('UserLoginForm', 'submit', "Form.Element.setValue('UserLoginSubmit','Authenticating...');Form.Element.disable('UserLoginSubmit');");
+    echo $javascript->codeBlock("Form.Element.focus('OpenidUrlOpenid');");
     echo $form->end();
-    echo $html->div('', 'Don\'t have an <a href="http://openid.net/" target="_blank">OpenID</a>? Get one at <a href="https://www.myopenid.com/" target="_blank">myOpenID</a>.');
+    echo $html->div(null, 'Don\'t have an <a href="http://openid.net/" target="_blank">OpenID</a>? Get one at <a href="https://www.myopenid.com/" target="_blank">myOpenID</a>.');
  }
 
 ?>

@@ -2,6 +2,11 @@
 class CategoriesController extends AppController {
     var $name = 'Categories';
     
+    function beforeFilter() {
+	parent::beforeFilter();
+	$this->Auth->allowedActions = array('index', 'view');
+    }
+
     function index() {
         $this->set('categories', $this->Category->find('all'));
     }

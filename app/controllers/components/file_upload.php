@@ -45,6 +45,15 @@ class FileUploadComponent extends Object{
      * @access public 
      */ 
     var $fileVar = 'file'; 
+
+    /***************************************************
+     * maxSize is the maximum size of any uploaded file
+     * that is permitted.
+     *
+     * $var int
+     * $access public
+     */
+    var $maxSize = 524288; // 512 kB
    
     /*************************************************** 
      * allowedTypes is the allowed types of files that will be saved 
@@ -55,11 +64,11 @@ class FileUploadComponent extends Object{
      * @access public 
      */ 
     var $allowedTypes = array( 
-			      'image/jpeg' => '.jpg', 
-			      'image/gif' => '.gif', 
-			      'image/png' => '.png', 
-			      'image/pjpeg' => '.jpg', 
-			      'image/x-png' => '.png' 
+			      'image/jpeg', 
+			      'image/gif', 
+			      'image/png', 
+			      'image/pjpeg', 
+			      'image/x-png' 
 			       ); 
    
     /*************************************************** 
@@ -68,7 +77,7 @@ class FileUploadComponent extends Object{
      * @var array 
      * @access public 
      */ 
-    var $fields = array('type'=>'type','size'=>'size'); 
+    var $fields = array('name'=>'name','type'=>'type','size'=>'size'); 
    
     /*************************************************** 
      * This will be true if an upload is detected even 
@@ -123,22 +132,6 @@ class FileUploadComponent extends Object{
      * @access public 
      */ 
     var $errors = array(); 
-
-    /***************************************************
-     * extension holds the extension to use on the file.
-     *
-     * @var string
-     * @access public
-     */
-    var $extension = null;
-
-    /***************************************************
-     * Upload is a reference to the Upload model.
-     *
-     * @var Upload
-     * @access public
-     */
-    var $Upload = null;
    
     /*************************************************** 
      * Initializes FileUploadComponent for use in the controller 
@@ -149,7 +142,7 @@ class FileUploadComponent extends Object{
      */ 
     function initialize(&$controller){ 
 	$this->data = $controller->data; 
-	$this->params = $controller->params; 
+	$this->params = $controller->params;
     } 
     /*************************************************** 
      * Main execution method.  Handles file upload automatically upon detection and verification. 
@@ -212,39 +205,38 @@ class FileUploadComponent extends Object{
      * @access private 
      */ 
     function _processFile(){ 
-	$save_data = array(); 
-	
-	$model =& $this->getModel();  
-	$save_data[$this->fields['type']] = $this->uploadedFile['type']; 
-	$save_data[$this->fields['size']] = $this->uploadedFile['size'];
-	
-	if(!$model || $model->save($save_data)){ 
-	    $this->success = true; 
-	} 
-	else{ 
-	    $this->success = false; 
-	    $this->_error('FileUpload::processFile() - Unable to save data to database.'); 
-	    return;
-	} 
-
 	$up_dir = WWW_ROOT . $this->uploadDir; 
-	$target_path = $up_dir . DS . $this->Upload->getInsertID() . $this->extension; 
-	$temp_path = substr($target_path, 0, strlen($target_path) - strlen($this->_ext())); //temp path without the ext 
+	$target_path = $up_dir . DS . md5($this->uploadedFile['name']) . $this->_ext(); 
+
 	//make sure the file doesn't already exist, if it does, add an itteration to it 
-	$i=1; 
-	while(file_exists($target_path)){ 
-	    $target_path = $temp_path . "-" . $i . $this->_ext(); 
-	    $i++; 
-	} 
-     
-	
-	if(move_uploaded_file($this->uploadedFile['tmp_name'], $target_path)){ 
-	    //Final File Name 
-	    $this->finalFile = basename($target_path); 
-	} 
-	else{ 
-	    $this->_error('FileUpload::processFile() - Unable to save temp file to file system.'); 
-	} 
+        $i=1; 
+        while(file_exists($target_path)){ 
+            $target_path = $up_dir . DS . md5($this->uploadedFile['name'] . $i) . $this->_ext(); 
+            $i++; 
+        } 
+	if ($this->uploadedFile['size'] <= $this->maxSize) {
+	    $save_data = array(); 
+	    if(move_uploaded_file($this->uploadedFile['tmp_name'], $target_path)){ 
+		//Final File Name 
+		$this->finalFile = basename($target_path); 
+		$model =& $this->getModel(); 
+		$save_data[$this->fields['name']] = $this->finalFile; 
+		$save_data[$this->fields['type']] = $this->uploadedFile['type']; 
+		$save_data[$this->fields['size']] = $this->uploadedFile['size']; 
+		if(!$model || $model->save($save_data)){ 
+		    $this->success = true; 
+		} 
+		else{ 
+		    $this->success = false; 
+		} 
+	    } 
+	    else{ 
+		$this->_error('FileUpload::processFile() - Unable to save temp file to file system.'); 
+	    } 
+	}
+	else {
+	    $this->_error('FileUpload::processFile() - File size was too big.');
+	}
     } 
    
     /*************************************************** 
@@ -296,9 +288,8 @@ class FileUploadComponent extends Object{
      * @access protected 
      */ 
     function _checkType(){ 
-	foreach($this->allowedTypes as $type => $extension){ 
-	    if(strtolower($this->uploadedFile['type']) == strtolower($type)){ 
-		$this->extension = $extension;
+	foreach($this->allowedTypes as $value){ 
+	    if(strtolower($this->uploadedFile['type']) == strtolower($value)){ 
 		return true; 
 	    } 
 	} 
@@ -336,12 +327,11 @@ class FileUploadComponent extends Object{
      */ 
     function _uploadedFileArray(){ 
 	if($this->fileModel){ 
-	    $retval = isset($this->data[$this->fileModel][$this->fileVar]) ? $this->data[$this->fileModel][$this->fileVar] : false; 
+	    $retval = isset($this->data[$this->fileModel][$this->fileVar]) ? $this->data[$this->fileModel][$this->fileVar] : false;
 	} 
 	else { 
 	    $retval = isset($this->params['form'][$this->fileVar]) ? $this->params['form'][$this->fileVar] : false; 
 	} 
-     
 	if($this->uploadDetected && $retval === false){ 
 	    $this->_error("FileUpload: A file was detected, but was unable to be processed due to a misconfiguration of FileUpload. Current config -- fileModel:'{$this->fileModel}' fileVar:'{$this->fileVar}'"); 
 	} 

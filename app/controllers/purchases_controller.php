@@ -2,6 +2,10 @@
 class PurchasesController extends AppController {
     var $name = 'Purchases';
     
+    function beforeFilter() {
+	parent::beforeFilter();
+    }
+
     function index() {
         $this->set('purchases', $this->Purchase->find('all'));
     }
