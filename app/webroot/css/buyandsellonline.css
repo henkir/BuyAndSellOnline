@@ -1,16 +1,44 @@
+#yui-history-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  visibility: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 #banner {
     text-align: center;
+}
+
+ul {
+    list-style-type: none;
 }
 
 #menu ul {
     color: #2222ee;
     list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+#menu ul ul {
+    list-style-type: circle;
+    padding-left: 2em;
 }
 
 .loginTextbox {
     background: url('../img/openid.gif') no-repeat;
     padding-left: 18px;
-    width: 200px;
+    width: 15em;
 }
 
 #items {
@@ -19,17 +47,17 @@
 
 .item {
     background: #cccccc;
-    padding: 5px;
-    margin: 5px 0px 5px 0px;
+    padding: 0.5em;
+    margin: 0.5em 0 0.5em 0;
 }
 
 .item h4 {
-    margin: 0px;
+    margin: 0;
 }
 
 .item p {
     color: #000022;
-    margin: 0px;
+    margin: 0;
 }
 
 .item div {
@@ -38,8 +66,8 @@
 
 .item_small_img {
     float: left;
-    margin: 0px 5px 0px 0px;
-    height: 50px;
+    margin: 0 0.5 0 0.5em;
+    height: 5em;
 }
 
 .item_img {
@@ -55,35 +83,41 @@ div.spinner {
 }
 
 .sort {
-    height: 28px;
+    height: 2.5em;
 }
 
-div.input {
-
-}
-
-
-
-.addDiv {
-    text-align: center;
-    width: 600px;
-}
-
-label {
-    font-weight: normal;
+.addItem div label,.register div label {
     float: left;
-    margin-right: 5px;
-    margin-top: 6px;
+    margin-right: 1em;
+    margin-top: 0.5em;
     text-align: right;
-    width: 120px;
+    width: 12em;
+}
+
+
+.login div label {
+    float: left;
+    margin-right: 1em;
+    margin-top: 0.5em;
+    text-align: right;
+    width: 8em;
+}
+
+
+.checkbox {
+    margin-bottom: 1em;
 }
 
 .required label {
     font-weight: bold;
 }
 
-form.addItem div.submit input {
-    margin-left: 127px;
-    width: 100px;
+.categories {
+    list-style-type: none;
 }
 
+.categories li span {
+    display: block;
+    float: left;
+    width: 150px;
+}

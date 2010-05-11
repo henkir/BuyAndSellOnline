@@ -16,7 +16,7 @@ if ($item['Item']['modified']) {
     echo $html->tag('span', $item['Item']['modified'], array('class' => 'dateCreated'));
  }
 echo $html->para(null, $item['Item']['description']);
-echo $html->div(null, '$'.$item['Item']['price']);
+echo $html->div(null, $number->currency($item['Item']['price'], 'USD'));
 if ($loggedIn) {
     echo '<input type="button" value="Buy" onclick="'.$ajax->remoteFunction(array('url' => array('controller' => 'items', 'action' => 'buy', $id), 'update' => 'content')).'">';
 }

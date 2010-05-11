@@ -5,13 +5,16 @@ class PagesController extends AppController {
     var $helpers = array('Html', 'Javascript', 'Ajax');
 
     function beforeFilter() {
-	parent::beforeFilter();
+        parent::beforeFilter();
     }
-    
+
+    /**
+     * First action when a user entered the site.
+     */
     function display() {
         $this->set('title', 'BuyAndSellOnline');
     }
-    
+
 }
 
 ?>

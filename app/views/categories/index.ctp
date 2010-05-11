@@ -1,7 +1,12 @@
-<h1>Categories</h1>
-<?php foreach ($categories as $category) { ?>
-<div>
-<?php echo $category['Category']['name']; ?>
-<?php echo $html->link('Delete', array('action' => 'delete', 'id' => $category['Category']['id']), null, 'Delete '.$category['Category']['name'].'?'); ?>
-</div>
-<?php } ?>
+<?php
+echo $html->tag('h2', 'Categories');
+$out = '';
+foreach ($categories as $category) {
+    $out .= $html->tag('li',
+		       $ajax->link($category['Category']['name'],
+				   array('action' => 'view',
+					 $category['Category']['id']),
+				   array('update' => 'content')));
+}
+echo $html->tag('ul', $out, array('class' => 'categories'));
+?>

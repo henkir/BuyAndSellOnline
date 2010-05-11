@@ -1,18 +1,22 @@
 <?php
 class Group extends AppModel {
 
-	var $name = 'Group';
+    var $name = 'Group';
+    /**
+     * A Group acts as a requester.
+     */
     var $actsAs = array('Acl' => 'requester');
+    /**
+     * A Group has many Users.
+     */
+    var $hasMany = array('User');
 
-	/*var $hasMany = array(
-		'User' => array(
-			'className' => 'User',
-			'foreignKey' => 'group_id',
-			'dependent' => false));*/
-
+    /**
+     * Gets the parent node of the Group.
+     */
     function parentNode() {
         return null;
     }
 
-}
+  }
 ?>

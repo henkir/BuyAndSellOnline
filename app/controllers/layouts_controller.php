@@ -5,9 +5,12 @@ class LayoutsController extends AppController {
     var $uses = array();
 
     function beforeFilter() {
-	parent::beforeFilter();
+        parent::beforeFilter();
     }
-    
+
+    /**
+     * Gets the current menu.
+     */
     function menu() {
 
     }

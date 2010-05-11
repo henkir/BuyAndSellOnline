@@ -5,3 +5,4 @@ app/tmp
 .buildpath
 .settings/
 app/webroot/img/uploads/
+app/webroot/files/
