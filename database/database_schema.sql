@@ -10,12 +10,13 @@ CREATE TABLE `groups` ( `id` INT(1) NOT NULL,
                         ) ENGINE=MyISAM;
 -- Create users, mostly holding OpenID and group.
 CREATE TABLE `users` (  `id` integer auto_increment,
-                        `username` char(50),
+                        `username` varchar(20),
                         `password` char(40),
+			`email` varchar(50),
 			`openid` char(80),
-                        `first_name` varchar(32),
-                        `last_name` varchar(32),
-                        `group_id` INT(1) DEFAULT 0,
+                        `fullname` varchar(40),
+			`nickname` varchar(20),
+                         `group_id` INT(1) DEFAULT 1,
                         PRIMARY KEY (`id`)
                         ) ENGINE=MyISAM;
 -- Create categories, that items can belong to.

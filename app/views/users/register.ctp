@@ -15,12 +15,17 @@ if ($loggedIn) {
     }
 
     // Create form components
-    $rForm = $form->create('User', array('class' => 'register', 'action' => 'register'));
-    $rUsername = $form->input('username', array('label' => 'Username:'));
-    $rPassword = $form->input('passwd', array('label' => 'Password:', 'type' => 'password'));
+    $rForm = $form->create('User',
+             array('class' => 'register', 'action' => 'register'));
+    $rUsername = $form->input('username',
+                 array('label' => 'Username:',
+                 'onchange' =>
+                     "if (Form.Element.getValue('UserNickname') == '') { Form.Element.setValue('UserNickname', Form.Element.getValue('UserUsername')); }"));
+    $rPassword = $form->input('passwd',
+                 array('label' => 'Password:', 'type' => 'password'));
     $rEmail = $form->input('email', array('label' => 'Email:'));
-    $rFirstName = $form->input('first_name', array('label' => 'First name:'));
-    $rLastName = $form->input('last_name', array('label' => 'Last name:'));
+    $rFullName = $form->input('fullname', array('label' => 'Full name:'));
+    $rNickName = $form->input('nickname', array('label' => 'Nickname:'));
     $rFocus = $javascript->codeBlock("Form.Element.focus('UserUsername')") .
 	$javascript->blockEnd();
     $rSubmit = $html->div(null, $form->label(null, '') .
@@ -28,7 +33,7 @@ if ($loggedIn) {
     $rEnd = $form->end();
 
     echo $rForm . $rUsername . $rPassword . $rEmail .
-	$rFirstName . $rLastName . $rFocus . $rSubmit . $rEnd;
+	$rFullName . $rNickName . $rFocus . $rSubmit . $rEnd;
 
  }
 ?>

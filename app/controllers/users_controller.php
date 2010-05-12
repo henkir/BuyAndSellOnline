@@ -70,56 +70,64 @@ class UsersController extends AppController {
      * Registers a user the traditional way.
      */
     function register() {
-	if (!empty($this->data)) {
-	    $this->data['User']['password'] = $this->Auth->password($this->data['User']['passwd']);
-	    $this->data['User']['group_id'] = 1;
-	    if ($this->User->save($this->data)) {
-		$this->Session->setFlash('Successfully registered.',
-					 'default',
-					 array('class' => 'success'));
-		$this->render('login');
-	    } else {
+        if (!empty($this->data)) {
+            $this->data['User']['password'] =
+                $this->Auth->password($this->data['User']['passwd']);
+            $this->data['User']['group_id'] = 1;
+            if ($this->User->save($this->data)) {
+                $this->Session->setFlash('Successfully registered.',
+                    'default',
+                    array('class' => 'success'));
+                $this->render('login');
+            } else {
 
-		$this->Session->setFlash('Failed to register.',
-					 'default',
-					 array('class' => 'error'));
-	    }
-	}
+                $this->Session->setFlash('Failed to register.',
+                    'default',
+                    array('class' => 'error'));
+            }
+        }
     }
 
     /**
      * Logs in a user with OpenID, or the traditional way.
      */
     function login() {
-        $returnTo = 'http://'.Configure::read('ip').Configure::read('relativeUrl').'/users/login';
+        $returnTo = 'http://' . Configure::read('ip') .
+            Configure::read('relativeUrl').'/users/login';
 
         // If data isn't empty, try to authenticate user using OpenID.
         if (!empty($this->data)) {
-	    if (!empty($this->data['OpenidUrl']['openid'])) {
-		try {
-		    $this->Openid->authenticate($this->data['OpenidUrl']['openid'],
+            if (!empty($this->data['OpenidUrl']['openid'])) {
+                try {
+                    $this->Openid->authenticate(
+                        $this->data['OpenidUrl']['openid'],
 						$returnTo,
-						'http://' . Configure::read('ip') . Configure::read('relativeUrl'));
-		} catch (InvalidArgumentException $e) {
-		    $this->Session->setFlash('Invalid OpenID',
-					     'default',
-					     array('class' => 'error'));
-		} catch (Exception $e) {
-		    $this->Session->setFlash($e->getMessage(),
-					     'default',
-					     array('class' => 'error'));
-		}
-	    }
+						'http://' . Configure::read('ip') .
+                        Configure::read('relativeUrl'),
+                        array('sreg_required' =>
+                            array('email', 'nickname', 'fullname')));
+                } catch (InvalidArgumentException $e) {
+                    $this->Session->setFlash('Invalid OpenID',
+                        'default',
+                        array('class' => 'error'));
+                } catch (Exception $e) {
+                    $this->Session->setFlash($e->getMessage(),
+                        'default',
+                        array('class' => 'error'));
+                }
+            }
         } elseif (count($_GET) > 1) {
             // Response from OpenID
             $response = $this->Openid->getResponse($returnTo);
-            $sregResponse = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
+            $sregResponse =
+                Auth_OpenID_SRegResponse::fromSuccessResponse($response);
             $sreg = $sregResponse->contents();
             $sreg['openid'] = $_GET['openid_identity'];
-	    // New user becomes a member
-	    $sreg['group_id'] = 1;
+            // New user becomes a member
+            $sreg['group_id'] = 1;
             $this->_testUser($sreg);
-            $this->Session->setFlash('Successfully authenticated!', 'default', array('class' => 'success'));
+            $this->Session->setFlash('Successfully authenticated!',
+                'default', array('class' => 'success'));
 
             $this->redirect('/');
             $this->autoRender = false;
@@ -159,7 +167,8 @@ class UsersController extends AppController {
      * Logs out the User currently logged in.
      */
     function logout() {
-        $this->Session->setFlash('Logged out', 'default', array('class' => 'success'));
+        $this->Session->setFlash('Logged out',
+            'default', array('class' => 'success'));
         $this->redirect($this->Auth->logout());
     }
 
@@ -167,12 +176,16 @@ class UsersController extends AppController {
      * Sets privileges for different groups, should be made private in production
      */
     function initDB() {
+        $this->build_acl();
+        $this->requestAction(
+            array('controller' => 'groups', 'action' => 'initGroups'));
+
         $group =& $this->User->Group;
         // Administrators
-        $group->id = 2;
+        $group->id = 3;
         $this->Acl->allow($group, 'controllers');
         // Moderators
-        $group->id = 1;
+        $group->id = 2;
         $this->Acl->deny($group, 'controllers');
         $this->Acl->allow($group, 'controllers/Items');
         $this->Acl->allow($group, 'controllers/Tags');
@@ -181,7 +194,7 @@ class UsersController extends AppController {
         $this->Acl->allow($group, 'controllers/Groups');
         $this->Acl->allow($group, 'controllers/Users');
         // Members
-        $group->id = 0;
+        $group->id = 1;
         $this->Acl->deny($group, 'controllers');
         $this->Acl->allow($group, 'controllers/Items/add');
         $this->Acl->allow($group, 'controllers/Tags/add');
@@ -384,5 +397,5 @@ class UsersController extends AppController {
     // End functions for building ACOs --------------------------------------------------------------------
 
 
-}
+  }
 ?>

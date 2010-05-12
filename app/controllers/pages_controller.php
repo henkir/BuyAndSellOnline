@@ -12,7 +12,7 @@ class PagesController extends AppController {
      * First action when a user entered the site.
      */
     function display() {
-        $this->set('title', 'BuyAndSellOnline');
+
     }
 
 }

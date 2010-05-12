@@ -1,57 +1,59 @@
 <?php
 
   /**
-   * Prints a menu with AJAX links. Should be given the variables $loggedIn, $moderator and $admin.
-   * Example: $this->element('menu', array('loggedIn' => true, 'moderator' => true, 'admin' => false));
+   * Prints a menu with AJAX links. Should be given the variables $loggedIn,
+   * $moderator and $admin by using $this->set().
+   *
    */
 
 $relativeUrl = Configure::read('relativeUrl');
 
 // Use this as complete callback function when the menu needs to be updated.
-$updateMenu = 'new Ajax.Updater("menu","'.$relativeUrl.'/layouts/menu",{method:"get",evalScripts:true});';
+$updateMenu = 'new Ajax.Updater("menu","' . $relativeUrl .
+    '/layouts/menu",{method:"get",evalScripts:true});';
 
 
 $home = $html->tag('li',
-		   $ajax->link('Home',
-			       array('controller' => 'pages', 'action' => 'display'),
-			       array('update' => 'content')));
+        $ajax->link('Home',
+            array('controller' => 'pages', 'action' => 'display'),
+            array('update' => 'content')));
 
 $browse = $html->tag('li',
-		     $ajax->link('Browse',
-				 array('controller' => 'items', 'action' => 'index'),
-				 array('update' => 'content')));
+          $ajax->link('Browse',
+              array('controller' => 'items', 'action' => 'index'),
+              array('update' => 'content')));
 
 $addItem = $html->tag('li',
-		      $ajax->link('Add Item',
-				  array('controller' => 'items', 'action' => 'add'),
-				  array('update' => 'content')));
+           $ajax->link('Add Item',
+               array('controller' => 'items', 'action' => 'add'),
+               array('update' => 'content')));
 
 $moderatorMenu = 'Moderator';
 
 $adminMenu = 'Administrator';
 
 $categories = $html->tag('li',
-			 $ajax->link('Categories',
-				     array('controller' => 'categories',
-					   'action' => 'edit'),
-				     array('update' => 'content')));
+              $ajax->link('Categories',
+                  array('controller' => 'categories',
+                      'action' => 'edit'),
+                  array('update' => 'content')));
 
 $users = $html->tag('li',
-		    $ajax->link('Users',
-				array('controller' => 'users',
-				      'action' => 'index'),
-				array('update' => 'content')));
+         $ajax->link('Users',
+             array('controller' => 'users',
+                 'action' => 'index'),
+             array('update' => 'content')));
 
 $logout = $html->tag('li',
-		     $ajax->link('Logout',
-				 array('controller' => 'users', 'action' => 'logout'),
-				 array('update' => 'content',
-				       'complete' => $updateMenu)));
+          $ajax->link('Logout',
+              array('controller' => 'users', 'action' => 'logout'),
+              array('update' => 'content',
+                  'complete' => $updateMenu)));
 
 $login = $html->tag('li',
-		    $ajax->link('Login',
-				array('controller' => 'users', 'action' => 'login'),
-				array('update' => 'content')));
+         $ajax->link('Login',
+             array('controller' => 'users', 'action' => 'login'),
+             array('update' => 'content')));
 
 $adminItems = '';
 $menuItems = $home . $browse;
@@ -61,7 +63,7 @@ if ($loggedIn) {
 if ($admin) {
     $subMenu = $adminMenu;
  } elseif ($moderator) {
-     $subMenu .= $moderatorMenu;
+     $subMenu = $moderatorMenu;
    }
 if ($moderator) {
     $adminItems .= $categories;
@@ -71,8 +73,8 @@ if ($admin) {
  }
 if (isset($subMenu)) {
     $menuItems .= $html->tag('li',
-			     $subMenu .
-			     $html->tag('ul', $adminItems, array('class' => 'bullets')));
+                  $subMenu .
+                  $html->tag('ul', $adminItems));
  }
 if ($loggedIn) {
     $menuItems .= $logout;

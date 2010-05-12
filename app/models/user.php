@@ -14,18 +14,34 @@ class User extends AppModel {
      */
     var $actsAs = array('Acl' => 'requester');
 
-    var $validate = array('username' => array('nameRule1' => array('rule' => array('between', 4, 20),
-								   'last' => true,
-								   'message' => 'Username must be between 4 and 20 characters.'),
-					      'nameRule2' => array('rule' => 'alphaNumeric',
-								   'last' => true,
-								   'message' => 'Username must be alpha-numeric.'),
-					      'nameRule3' => array('rule' => 'isUnique',
-								   'message' => 'Username already exists.')),
-			  'passwd' => array('passwordRule1' => array('rule' => array('minLength', 8),
-								     'message' => 'Password must be at least 8 characters.')),
-			  'email' => array('emailRule1' => array('rule' => 'email',
-								 'message' => 'The email must be valid.')));
+    var $validate = array('username' => array(
+                        'nameRule1' => array('rule' => array(
+                                         'between', 4, 20),
+                                     'last' => true,
+                                     'message' =>
+                                     'Username must be between 4 and 20 characters.'),
+                        'nameRule2' => array('rule' => 'alphaNumeric',
+                                     'last' => true,
+                                     'message' => 'Username must be alpha-numeric.'),
+                        'nameRule3' => array('rule' => 'isUnique',
+                                     'message' => 'Username already exists.')),
+                    'passwd' => array(
+                        'passwordRule1' => array('rule' => array('minLength', 8),
+                                         'message' =>
+                                         'Password must be at least 8 characters.')),
+                    'email' => array(
+                        'emailRule1' => array('rule' => 'email',
+                                      'message' => 'The email must be valid.')),
+                    'nickname' => array(
+                        'nickRule1' => array('rule' => array('between', 4, 20),
+                                     'last' => true,
+                                     'message' =>
+                                     'Nickname must be between 4 and 20 characters.'),
+                        'nickRule2' => array('rule' => 'alphaNumeric',
+                                     'last' => true,
+                                     'message' => 'Nickname must be alpha-numeric.'),
+                    'nickRule3' => array('rule' => 'isUnique',
+                                 'message' => 'Nickname already exists.')));
 
     /**
      * Gets the parent node of the user.

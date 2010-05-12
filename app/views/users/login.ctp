@@ -14,7 +14,7 @@ if ($loggedIn) {
     echo 'Already logged in.';
  } else {
     // Create OpenID form components
-    $oForm = $form->create('User', array('type' => 'post', 'action' => 'loginOpenid'));
+    $oForm = $form->create('User', array('type' => 'post', 'action' => 'login'));
     $oOpenid = $form->input('OpenidUrl.openid',
 		      array('label' => false,
 			    'div' => false,
@@ -44,16 +44,18 @@ if ($loggedIn) {
 
     echo $oForm . $oOpenid . $oSubmit . $oAuthenticating . $oFocus . $oEnd;
     echo $html->para(null,
-		    'Don\'t have an <a href="http://openid.net/" target="_blank">OpenID</a>? Get one at <a href="https://www.myopenid.com/" target="_blank">myOpenID</a>.');
+		    'Don\'t have an <a href="http://openid.net/" target="_blank">OpenID</a>? Get one at <a href="http://www.myid.net/" target="_blank">myID.net</a>.');
     echo $html->para(null,
 		     'Or, if you want to login in a traditional way.');
     echo $lForm . $lUsername . $lPassword . $lSubmit . $lAuthenticating . $lEnd;
 
     echo $html->para(null,
-		     "Don't have an account? " .
-		     $ajax->link('Register',
-				 array('controller' => 'users',
-				       'action' => 'register')));
+        "Don't have an account? " .
+        $ajax->link('Register',
+            array('controller' => 'users',
+                'action' => 'register'),
+            array('update' => 'content')) .
+        ' free.');
  }
 
 ?>
