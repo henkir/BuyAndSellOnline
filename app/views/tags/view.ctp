@@ -1,6 +1,18 @@
-<h2><?php echo $tag['Tag']['name']; ?></h2>
-<table>
-<?php foreach($tag['Item'] as $item) { ?>
-<tr><td><?php echo $ajax->link($item['name'], array('controller' => 'items', 'action' => 'smallview', $item['id']), array('update' => 'content')); ?></td></tr>
-<?php } ?>
-</table>
+<?php
+
+echo $html->tag('h2', $tag['Tag']['name']);
+
+$itemsList = '';
+
+foreach($tag['Item'] as $item) {
+    $itemsList .= $html->tag('li',
+                  $ajax->link($item['name'],
+                      array('controller' => 'items',
+                          'action' => 'view',
+                          $item['id']),
+                      array('update' => 'content')));
+}
+
+echo $html->tag('ul', $itemsList);
+
+?>

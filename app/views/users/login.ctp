@@ -14,13 +14,16 @@ if ($loggedIn) {
     echo 'Already logged in.';
  } else {
     // Create OpenID form components
-    $oForm = $form->create('User', array('type' => 'post', 'action' => 'login'));
+    $oForm = $form->create('User',
+             array('type' => 'post', 'action' => 'login',
+                 'id' => 'UserLoginFormOpenid'));
     $oOpenid = $form->input('OpenidUrl.openid',
 		      array('label' => false,
 			    'div' => false,
 			    'class' => 'loginTextbox'));
-    $oSubmit = $form->submit('Login', array('div' => false, 'id' => 'UserLoginSubmitOpenid'));
-    $oAuthenticating = $javascript->event('UserLoginForm',
+    $oSubmit = $form->submit('Login',
+               array('div' => false, 'id' => 'UserLoginSubmitOpenid'));
+    $oAuthenticating = $javascript->event('UserLoginFormOpenid',
 					  'submit',
 					  "Form.Element.setValue('UserLoginSubmitOpenid','Authenticating...');Form.Element.disable('UserLoginSubmitOpenid');");
     $oFocus = $javascript->codeBlock("Form.Element.focus('OpenidUrlOpenid');");
@@ -36,7 +39,8 @@ if ($loggedIn) {
 			      array('label' => 'Password:'));
     $lSubmit = $html->div(null,
 			  $form->label(null, '') .
-			  $form->submit('Login', array('div' => false, 'id' => 'UserLoginSubmit')));
+			  $form->submit('Login',
+                  array('div' => false, 'id' => 'UserLoginSubmit')));
     $lAuthenticating = $javascript->event('UserLoginForm',
 				 'submit',
 					  "Form.Element.setValue('UserLoginSubmit','Authenticating...');Form.Element.disable('UserLoginSubmit');");

@@ -14,49 +14,52 @@ $updateMenu = 'new Ajax.Updater("menu","' . $relativeUrl .
 
 
 $home = $html->tag('li',
-        $ajax->link('Home',
-            array('controller' => 'pages', 'action' => 'display'),
-            array('update' => 'content')));
+        $html->link('Home',
+            '/'));
 
 $browse = $html->tag('li',
-          $ajax->link('Browse',
-              array('controller' => 'items', 'action' => 'index'),
-              array('update' => 'content')));
+          $html->link('Browse',
+          array('controller' => 'items', 'action' => 'index')));
 
 $addItem = $html->tag('li',
-           $ajax->link('Add Item',
-               array('controller' => 'items', 'action' => 'add'),
-               array('update' => 'content')));
+           $html->link('Add Item',
+               array('controller' => 'items', 'action' => 'add')));
+
+$categories = $html->tag('li',
+              $html->link('Categories',
+                  array('controller' => 'categories',
+                      'action' => 'index')));
+
+$tags = $html->tag('li',
+        $html->link('Tags',
+            array('controller' => 'tags',
+                'action' => 'index')));
 
 $moderatorMenu = 'Moderator';
 
 $adminMenu = 'Administrator';
 
-$categories = $html->tag('li',
-              $ajax->link('Categories',
-                  array('controller' => 'categories',
-                      'action' => 'edit'),
-                  array('update' => 'content')));
+$categoriesEdit = $html->tag('li',
+                  $html->link('Categories',
+                      array('controller' => 'categories',
+                          'action' => 'edit')));
 
 $users = $html->tag('li',
-         $ajax->link('Users',
+         $html->link('Users',
              array('controller' => 'users',
-                 'action' => 'index'),
-             array('update' => 'content')));
+                 'action' => 'index')));
 
 $logout = $html->tag('li',
-          $ajax->link('Logout',
+          $html->link('Logout',
               array('controller' => 'users', 'action' => 'logout'),
-              array('update' => 'content',
-                  'complete' => $updateMenu)));
+              array('update' => 'content')));
 
 $login = $html->tag('li',
-         $ajax->link('Login',
-             array('controller' => 'users', 'action' => 'login'),
-             array('update' => 'content')));
+         $html->link('Login',
+             array('controller' => 'users', 'action' => 'login')));
 
 $adminItems = '';
-$menuItems = $home . $browse;
+$menuItems = $home . $browse . $categories . $tags;
 if ($loggedIn) {
     $menuItems .= $addItem;
  }
@@ -66,7 +69,7 @@ if ($admin) {
      $subMenu = $moderatorMenu;
    }
 if ($moderator) {
-    $adminItems .= $categories;
+    $adminItems .= $categoriesEdit;
  }
 if ($admin) {
     $adminItems .= $users;

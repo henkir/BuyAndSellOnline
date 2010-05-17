@@ -1,6 +1,17 @@
-<h2>Tags</h2>
-<table>
-<?php foreach($tags as $tag) { ?>
-<tr><td><?php echo $tag['Tag']['name']; ?></td></tr>
-<?php } ?>
-</table>
+<?php
+
+echo $html->tag('h2', 'Tags');
+
+$tagsList = '';
+foreach($tags as $tag) {
+    $tagsList .= $html->tag('li',
+                 $ajax->link($tag['Tag']['name'],
+                     array('controller' => 'tags',
+                         'action' => 'view',
+                         $tag['Tag']['id']),
+                     array('update' => 'content')));
+}
+
+echo $html->tag('ul', $tagsList);
+
+?>

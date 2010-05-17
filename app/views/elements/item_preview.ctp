@@ -33,5 +33,4 @@ echo $html->tag('h4', $click);
 echo $html->para(null, $description);
 echo $html->div(null, $number->currency($item['Item']['price'], 'USD'));
 
-
 ?>

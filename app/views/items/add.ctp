@@ -14,16 +14,24 @@ if ($session->flash()) {
  }
 
 // Create form components
-$iForm = $form->create('Item', array('enctype' => 'multipart/form-data', 'class' => 'addItem'));
+$iForm = $form->create('Item',
+         array('enctype' => 'multipart/form-data', 'class' => 'addItem'));
 $iName = $form->input('name', array('label' => 'Title:'));
 $iCategory = $form->input('categories', array('label' => 'Category:'));
 $iPrice = $form->input('price', array('label' => 'Price:'));
 $iPaypal = $form->input('paypal', array('label' => 'Paypal account:'));
-$iImage = $form->input('file', array('type' => 'file', 'label' => 'Image:', 'name' => 'file'));
-$iDescription = $form->input('description', array('label' => array('style' => 'vertical-align:top',
-								   'text' => 'Description:')));
-$iTag = $form->input('Tag', array('label' => array('style' => 'vertical-align:top',
-						   'text' => 'Tags:')));
+$iImage = $form->input('file',
+          array('type' => 'file',
+              'label' => array('style' => 'font-weight:normal',
+                       'text' => 'Image:'),
+              'name' => 'file'));
+$iDescription = $form->input('description',
+                array('label' => array('style' => 'vertical-align:top',
+                               'text' => 'Description:')));
+$iTag = $form->input('Tag',
+        array('label' =>
+            array('style' => 'vertical-align:top;font-weight:normal',
+                'text' => 'Tags:')));
 $iAgreed = $form->input('agreed', array('label' => 'I agree to the ' .
 					$html->link('terms',
 						    array('controller' => 'items',

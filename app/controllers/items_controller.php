@@ -144,6 +144,7 @@ class ItemsController extends AppController {
 		if ($this->Item->save($this->data)) {
 		    $this->Session->setFlash('The item has been saved.',
 					     'default', array('class' => 'success'));
+            $this->redirect('/');
 		} else {
 		    if (!empty($this->data['Item']['image'])) {
 			$this->_deleteImage($this->data['Item']['image']);

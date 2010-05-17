@@ -33,9 +33,11 @@ class CategoriesController extends AppController {
     function edit($id = null) {
 	if (!empty($this->data)) {
             if ($this->Category->save($this->data)) {
-                $this->Session->setFlash('The category has been saved.', 'default', array('class' => 'success'));
+                $this->Session->setFlash('The category has been saved.',
+                    'default', array('class' => 'success'));
             } else {
-                $this->Session->setFlash('Failed saving the category.', 'default', array('class' => 'error'));
+                $this->Session->setFlash('Failed saving the category.',
+                    'default', array('class' => 'error'));
             }
 
         }
@@ -53,15 +55,19 @@ class CategoriesController extends AppController {
      */
     function add() {
         if (!empty($this->data)) {
-	    // Some manipulation required to save data.
-	    $this->data['Category']['category_id'] = $this->data['Category']['category'];
+            // Some manipulation required to save data.
+            $this->data['Category']['category_id'] =
+                $this->data['Category']['category'];
+
             if ($this->Category->save($this->data)) {
-                $this->Session->setFlash('The category has been saved.', 'default', array('class' => 'success'));
+                $this->Session->setFlash('The category has been saved.',
+                    'default', array('class' => 'success'));
             } else {
-                $this->Session->setFlash('Failed saving the category.', 'default', array('class' => 'error'));
+                $this->Session->setFlash('Failed saving the category.',
+                    'default', array('class' => 'error'));
             }
         }
-	$this->set('categories', $this->Category->find('list'));
+        $this->set('categories', $this->Category->find('list'));
     }
 
     /**
@@ -71,11 +77,14 @@ class CategoriesController extends AppController {
      */
     function delete($id) {
         if ($this->Category->delete($id)) {
-	    $this->Session->setFlash('The category has been deleted.', 'default', array('class' => 'success'));
-	} else {
-	    $this->Session->setFlash('Failed deleting the category.', 'default', array('class' => 'error'));
-	}
-        $this->redirect(array('controller' => 'categories', 'action' => 'edit'));
+	    $this->Session->setFlash('The category has been deleted.',
+            'default', array('class' => 'success'));
+        } else {
+            $this->Session->setFlash('Failed deleting the category.',
+                'default', array('class' => 'error'));
+        }
+        $this->redirect(
+            array('controller' => 'categories', 'action' => 'edit'));
     }
 
   }
