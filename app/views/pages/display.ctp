@@ -1,11 +1,10 @@
 <?php
 // Just set the title of the page here, so we don't have to bother later.
 $this->pageTitle = 'BuyAndSellOnline';
-
 if ($session->flash()) {
-    echo $session->flash();
+    $session->flash();
+    echo $this->element('hide_flash');
  }
-
 echo $html->tag('h2', 'BuyAndSellOnline');
 echo $html->para(null, 'Welcome to BuyAndSellOnline!');
 echo $html->para(null, 'At the moment, the following features are available (somewhat):');

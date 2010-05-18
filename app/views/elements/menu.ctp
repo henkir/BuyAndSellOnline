@@ -14,49 +14,56 @@ $updateMenu = 'new Ajax.Updater("menu","' . $relativeUrl .
 
 
 $home = $html->tag('li',
-        $html->link('Home',
-            '/'));
+        $ajax->link('Home',
+            '/',
+            array('update' => 'content')));
 
 $browse = $html->tag('li',
-          $html->link('Browse',
-          array('controller' => 'items', 'action' => 'index')));
+          $ajax->link('Browse',
+              array('controller' => 'items', 'action' => 'index'),
+              array('update' => 'content')));
 
 $addItem = $html->tag('li',
-           $html->link('Add Item',
-               array('controller' => 'items', 'action' => 'add')));
+           $ajax->link('Add Item',
+               array('controller' => 'items', 'action' => 'add'),
+               array('update' => 'content')));
 
 $categories = $html->tag('li',
-              $html->link('Categories',
+              $ajax->link('Categories',
                   array('controller' => 'categories',
-                      'action' => 'index')));
+                      'action' => 'index'),
+                  array('update' => 'content')));
 
 $tags = $html->tag('li',
-        $html->link('Tags',
+        $ajax->link('Tags',
             array('controller' => 'tags',
-                'action' => 'index')));
+                'action' => 'index'),
+            array('update' => 'content')));
 
 $moderatorMenu = 'Moderator';
 
 $adminMenu = 'Administrator';
 
 $categoriesEdit = $html->tag('li',
-                  $html->link('Categories',
+                  $ajax->link('Categories',
                       array('controller' => 'categories',
-                          'action' => 'edit')));
+                          'action' => 'edit'),
+                      array('update' => 'content')));
 
 $users = $html->tag('li',
-         $html->link('Users',
+         $ajax->link('Users',
              array('controller' => 'users',
-                 'action' => 'index')));
+                 'action' => 'index'),
+             array('update' => 'content')));
 
 $logout = $html->tag('li',
           $html->link('Logout',
-              array('controller' => 'users', 'action' => 'logout'),
-              array('update' => 'content')));
+              array('controller' => 'users', 'action' => 'logout')));
 
 $login = $html->tag('li',
-         $html->link('Login',
-             array('controller' => 'users', 'action' => 'login')));
+         $ajax->link('Login',
+             array('controller' => 'users', 'action' => 'login'),
+             array('update' => 'content')));
 
 $adminItems = '';
 $menuItems = $home . $browse . $categories . $tags;

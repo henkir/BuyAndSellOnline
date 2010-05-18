@@ -15,6 +15,10 @@ ul {
     list-style-type: none;
 }
 
+#flashMessage {
+    height: 30px;
+}
+
 #menu ul {
     color: #2222ee;
     list-style-type: none;

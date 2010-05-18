@@ -63,12 +63,8 @@ class AppController extends Controller {
         $this->Auth->loginAction = array(
             'controller' => 'users',
             'action' => 'login');
-        $this->Auth->logoutRedirect = array(
-            'controller' => 'pages',
-            'action' => 'display');
-        $this->Auth->loginRedirect = array(
-            'controller' => 'pages',
-            'action' => 'display');
+        $this->Auth->logoutRedirect = '/';
+        $this->Auth->loginRedirect = '/';
         // Always allow display (view that is rendered in the start page).
         $this->Auth->allowedActions = array('display');
         // TODO: remove this

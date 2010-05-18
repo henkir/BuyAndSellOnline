@@ -1,7 +1,10 @@
 <?php
 class CategoriesController extends AppController {
     var $name = 'Categories';
-    var $helpers = array('Form');
+    var $helpers = array('Form', 'Number');
+
+    var $paginate = array('limit' => 20,
+                          'order' => array('Category.name' => 'asc'));
 
     function beforeFilter() {
         parent::beforeFilter();
@@ -13,6 +16,8 @@ class CategoriesController extends AppController {
      */
     function index() {
         $this->set('categories', $this->Category->find('all'));
+        $data = $this->paginate();
+        $this->set('data', $data);
     }
 
     /**
@@ -21,8 +26,14 @@ class CategoriesController extends AppController {
      * @param id the id of the Category
      */
     function view($id) {
+        $this->paginate = array('limit' => 8,
+                          'order' => array('Item.name' => 'desc'),
+                          'conditions' => array('Item.category_id = ' => $id));
         $this->Category->id = $id;
-        $this->set('category', $this->Category->read());
+        $category = $this->Category->read();
+        $this->set('category', $category);
+        $data = $this->paginate('Item');
+        $this->set('data', $data);
     }
 
     /**

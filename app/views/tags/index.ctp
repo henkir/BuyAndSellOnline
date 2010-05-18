@@ -2,16 +2,31 @@
 
 echo $html->tag('h2', 'Tags');
 
-$tagsList = '';
-foreach($tags as $tag) {
-    $tagsList .= $html->tag('li',
-                 $ajax->link($tag['Tag']['name'],
-                     array('controller' => 'tags',
-                         'action' => 'view',
-                         $tag['Tag']['id']),
-                     array('update' => 'content')));
-}
+$paginator->options(array('update' => 'content', 'indicator' => 'spinner'));
+echo $ajax->div('tags');
+// Print sort options
+echo $html->div('sort', 'Sort: '.
+    $paginator->sort('Name', 'name').' '.
+    $paginator->sort('Created', 'created').
+    $html->div('spinner', $html->image('/img/loading.gif'),
+        array('id' => 'spinner', 'style' => 'display:none')));
 
-echo $html->tag('ul', $tagsList);
+$out = '';
+foreach ($data as $tag) {
+    $out .= $html->tag('li',
+		       $ajax->link($tag['Tag']['name'],
+				   array('action' => 'view',
+					 $tag['Tag']['id']),
+				   array('update' => 'content')));
+}
+echo $html->tag('ul', $out, array('class' => 'tags'));
+
+echo $html->div('paginator',
+        $paginator->prev('« Previous').' '.
+        $paginator->numbers().' '.
+        $paginator->next('Next »').'<br />'.
+        $paginator->counter().' ');
+
+echo $ajax->divEnd('tags');
 
 ?>

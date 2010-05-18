@@ -12,7 +12,7 @@ class LayoutsController extends AppController {
      * Gets the current menu.
      */
     function menu() {
-
+        $this->layout = null;
     }
 
 }

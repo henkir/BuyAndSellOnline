@@ -6,10 +6,10 @@
    */
 
 $click = $ajax->link($item['Item']['name'],
-		     array('controller' => 'items',
-			   'action' => 'view',
-			   $item['Item']['id']),
-		     array('update' => 'content'));
+         array('controller' => 'items',
+             'action' => 'view',
+             $item['Item']['id']),
+         array('update' => 'content'));
 $title = $html->tag('h5', $click);
 $image = '';
 $description = '';

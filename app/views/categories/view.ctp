@@ -1,18 +1,31 @@
 <?php
 
+$paginator->options(array('update' => 'content', 'indicator' => 'spinner',
+        'url' => array('action' => 'view', $category['Category']['id'])));
+
 echo $html->tag('h2', $category['Category']['name']);
 
-$out = '';
+echo $ajax->div('items');
 
-foreach ($category['Item'] as $item) {
-    $out .= $html->tag('li',
-		       $ajax->link($item['name'],
-				   array('controller' => 'items',
-					 'action' => 'view',
-					 $item['id']),
-				   array('update' => 'content')));
+echo $html->div('sort', 'Sort: '.
+        $paginator->sort('Name', 'name').' '.
+        $paginator->sort('Created', 'created').' '.
+        $paginator->sort('Price', 'price').
+        $html->div('spinner', $html->image('/img/loading.gif'),
+        array('id' => 'spinner', 'style' => 'display:none')));
+
+foreach ($data as $item) {
+    $this->set('item', $item);
+    echo $html->div('item', $this->element('item_preview'),
+        array('id' => 'item'.$item['Item']['id']));
 }
 
-echo $html->tag('ul', $out);
+echo $html->div('paginator',
+        $paginator->prev('« Previous').' '.
+        $paginator->numbers().' '.
+        $paginator->next('Next »').'<br />'.
+        $paginator->counter().' ');
+
+echo $ajax->divEnd('items');
 
 ?>

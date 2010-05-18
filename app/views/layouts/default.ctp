@@ -33,29 +33,10 @@ echo $html->css('/css/buyandsellonline.css', 'stylesheet', array('media' => 'scr
 echo $javascript->link('prototype.js');
 echo $javascript->link('scriptaculous.js');
 echo $javascript->link('shortcut.js');
-echo $javascript->link('timer.js');
-echo $javascript->link('backandbookmarking.js');
+//echo $javascript->link('backandbookmarking.js');
 // Print any eventual additional scripts.
 echo $scripts_for_layout;
 echo '</head><body>';
-echo $javascript->codeBlock("window.dhtmlHistory.create({
-        toJSON: function(o) {
-                return Object.toJSON(o);
-        }
-        , fromJSON: function(s) {
-                return s.evalJSON();
-        }
-});
-
-var yourListener = function(newLocation, historyData) {
-        alert(1);
-}
-
-window.onload = function() {
-        dhtmlHistory.initialize();
-        dhtmlHistory.addListener(yourListener);
-};");
-echo $javascript->blockEnd();
 // Print container for the page. Class needs to be container for Blueprint to work.
 echo $ajax->div('container', array('class' => 'container'));
 // Print the header.
@@ -87,9 +68,11 @@ foreach ($items as $item) {
     echo $this->element('item_latest');
 }
 // Update latest items automatically.
+// TODO: update links better
 echo $ajax->remoteTimer(
     array('url' => array('controller' => 'items', 'action' => 'latest'),
         'update' => 'news',
+        //'complete' => 'fixLinks();',
         'frequency' => 5,
         'evalScripts' => true));
 echo $ajax->divEnd('news');
@@ -97,10 +80,10 @@ echo $ajax->divEnd('news');
 echo $ajax->div('footer', array('class' => 'span-24 last'));
 echo $ajax->divEnd('footer');
 echo $ajax->divEnd('container');
-echo $javascript->codeBlock("if(document.iframesfix) {
+/*echo $javascript->codeBlock("if(document.iframesfix) {
 var windowlocator = new PageLocator('window.location.href', '#');
-document.write('<iframe id=\'ajaxnav\' name=\'ajaxnav\' src=\'mock-page.php?hash='+windowlocator.getHash()+\'' style=\'display: none;\'></iframe>');
+document.write(\"<iframe id='ajaxnav' name='ajaxnav' src='mock-page.php?hash=\"+windowlocator.getHash()+\"' style='display: none;'></iframe>\");
 }");
-echo $javascript->blockEnd();
+echo $javascript->blockEnd();*/
 echo '</body></html>';
 ?>
