@@ -3,9 +3,15 @@ class UsersController extends AppController {
 
     var $name = 'Users';
     var $components = array('Openid', 'Acl');
+    var $facebook;
 
     function beforeFilter() {
         parent::beforeFilter();
+        $this->facebook = new Facebook(array(
+                              'appId'  => '120588011307924',
+                              'secret' => '06905be69e3290747a3e4c7c91ca1479',
+                              'cookie' => true,
+                          ));
         $this->Auth->allowActions = array('index', 'view');
     }
 
@@ -14,6 +20,26 @@ class UsersController extends AppController {
      */
     function index() {
         $this->set('users', $this->User->find('all'));
+    }
+
+    function items($id = null) {
+        $this->paginate = array('limit' => Configure::read('itemsPerPage'),
+                          'order' => array('Item.created' => 'desc'));
+        if ($id == null) {
+            if ($this->Session->check('Auth.User.id')) {
+                $id = $this->Session->read('Auth.User.id');
+                $data = $this->paginate('Item', array('Item.user_id = ' => $id));
+                $this->set('data', $data);
+                $this->User->id = $id;
+                $this->set('user', $this->User->read());
+            }
+        } else {
+            $data = $this->paginate('Item', array('Item.user_id = ' => $id));
+            $this->set('data', $data);
+            $this->User->id = $id;
+            $this->set('user', $this->User->read());
+        }
+
     }
 
     /**
@@ -88,15 +114,60 @@ class UsersController extends AppController {
         }
     }
 
+    function check() {
+        return $this->_facebook();
+    }
+
+    function _facebook() {
+        return $this->_getFacebookCookie('120588011307924', '06905be69e3290747a3e4c7c91ca1479');
+    }
+
+    function _getFacebookCookie($app_id, $application_secret) {
+        if (isset($_COOKIE['fbs_' . $app_id])) {
+            $args = array();
+            parse_str(trim($_COOKIE['fbs_' . $app_id], '\\"'), $args);
+            ksort($args);
+            $payload = '';
+            foreach ($args as $key => $value) {
+                if ($key != 'sig') {
+                    $payload .= $key . '=' . $value;
+                }
+            }
+            if (md5($payload . $application_secret) != $args['sig']) {
+                return null;
+            }
+            return $args;
+        }
+        return null;
+    }
+
     /**
      * Logs in a user with OpenID, or the traditional way.
      */
     function login() {
+
         $returnTo = 'http://' . Configure::read('ip') .
             Configure::read('relativeUrl').'/users/login';
-
-        // If data isn't empty, try to authenticate user using OpenID.
-        if (!empty($this->data)) {
+        $facebookCookie = $this->_facebook();
+        $this->set('facebookCookie', $facebookCookie);
+        if ($facebookCookie != null && !$this->Session->check('User.Auth.id')) {
+            if (!empty($facebookCookie['uid'])) {
+                $user = $this->User->findByFacebookid($facebookCookie['uid']);
+                $data['facebookid'] = $facebookCookie['uid'];
+                $user = json_decode(file_get_contents(
+                            'https://graph.facebook.com/me?access_token=' .
+                            $facebookCookie['access_token']));
+                $this->autoRender = false;
+                $data['email'] = $user->email;
+                $data['fullname'] = $user->name;
+                $this->_testUser($data);
+                $this->Session->setFlash(
+                    'Successfully authenticated with Facebook.',
+                    'default', array('class' => 'success'));
+                $this->redirect('/');
+            }
+            // If data isn't empty, try to authenticate user using OpenID.
+        } elseif (!empty($this->data)) {
             if (!empty($this->data['OpenidUrl']['openid'])) {
                 try {
                     $this->Openid->authenticate(
@@ -126,11 +197,10 @@ class UsersController extends AppController {
             // New user becomes a member
             $sreg['group_id'] = 1;
             $this->_testUser($sreg);
-            $this->Session->setFlash('Successfully authenticated!',
+            $this->Session->setFlash('Successfully authenticated with OpenID.',
                 'default', array('class' => 'success'));
 
             $this->redirect('/');
-            $this->autoRender = false;
         }
     }
 
@@ -138,23 +208,23 @@ class UsersController extends AppController {
      * Tests if the user has logged in before and log in the user.
      */
     function _testUser($data) {
-        //$data['name'] = $data['fullname'];
-        $test = $this->User->findByOpenid($data['openid']);
-        $return['action'] = 'index';
+        if (isset($data['openid'])) {
+            $test = $this->User->findByOpenid($data['openid']);
+        } elseif (isset($data['facebookid'])) {
+            $test = $this->User->findByFacebookid($data['facebookid']);
+        }
 
         if ($test) {
             // User has logged in before, recreate data.
             $data = array_merge($test['User'], $data);
             $this->_recreate($data);
-            $return['id'] = $test['User']['id'];
+            $id = $test['User']['id'];
         } else {
             // First time, add user.
-            $return['id'] = $this->add($data);
-            $return['action'] = 'index';
+            $id = $this->add($data);
         }
         // Finally log in the user.
-        $this->Auth->login($return['id']);
-        //return $return;
+        $this->Auth->login($id);
     }
 
     // Recreate user given data.
@@ -167,8 +237,10 @@ class UsersController extends AppController {
      * Logs out the User currently logged in.
      */
     function logout() {
-        $this->Session->setFlash('Logged out',
+        $this->Session->setFlash('Logged out.',
             'default', array('class' => 'success'));
+        $facebookCookie = $this->_facebook();
+
         $this->redirect($this->Auth->logout());
     }
 

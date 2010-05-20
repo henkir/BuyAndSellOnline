@@ -14,9 +14,10 @@ CREATE TABLE `users` (  `id` integer auto_increment,
                         `password` char(40),
 			`email` varchar(50),
 			`openid` char(80),
+			`facebookid` char(20),
                         `fullname` varchar(40),
 			`nickname` varchar(20),
-                         `group_id` INT(1) DEFAULT 1,
+                        `group_id` INT(1) DEFAULT 1,
                         PRIMARY KEY (`id`)
                         ) ENGINE=MyISAM;
 -- Create categories, that items can belong to.

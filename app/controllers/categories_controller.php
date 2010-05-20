@@ -3,9 +3,6 @@ class CategoriesController extends AppController {
     var $name = 'Categories';
     var $helpers = array('Form', 'Number');
 
-    var $paginate = array('limit' => 20,
-                          'order' => array('Category.name' => 'asc'));
-
     function beforeFilter() {
         parent::beforeFilter();
         //$this->Auth->allowedActions = array('index', 'view');
@@ -15,7 +12,8 @@ class CategoriesController extends AppController {
      * Gets all Categories.
      */
     function index() {
-        $this->set('categories', $this->Category->find('all'));
+        $paginate = array('limit' => Configure::read('categoriesPerPage'),
+                          'order' => array('Category.name' => 'asc'));
         $data = $this->paginate();
         $this->set('data', $data);
     }
@@ -26,7 +24,7 @@ class CategoriesController extends AppController {
      * @param id the id of the Category
      */
     function view($id) {
-        $this->paginate = array('limit' => 8,
+        $this->paginate = array('limit' => Configure::read('itemsPerPage'),
                           'order' => array('Item.name' => 'desc'),
                           'conditions' => array('Item.category_id = ' => $id));
         $this->Category->id = $id;

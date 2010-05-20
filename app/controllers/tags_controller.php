@@ -4,19 +4,16 @@ class TagsController extends AppController {
     var $helpers = array('Number');
     var $components = array('RequestHandler');
 
-    var $paginate = array('limit' => 20,
-                          'order' => array('Tag.name' => 'asc'));
-
     function index() {
-        $this->set('tagInfo', '');
-        $this->set('tags', $this->Tag->find('all'));
+        $this->paginate = array('limit' => Configure::read('tagsPerPage'),
+                          'order' => array('Tag.name' => 'asc'));
         $data = $this->paginate();
         $this->set('data', $data);
     }
 
     function view($id = null) {
         $this->paginate = array('Item' =>
-                          array('limit' => 8, 'joins' => array(
+                          array('limit' => Configure::read('itemsPerPage'), 'joins' => array(
                                   array(
                                       'table' => 'items_tags',
                                       'alias' => 'ItemsTag',

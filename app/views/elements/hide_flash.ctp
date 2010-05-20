@@ -1,6 +1,6 @@
 <?php
 
-echo $javascript->codeBlock("setTimeout('Effect.BlindUp(\"flashMessage\", { });', 2000);");
+echo $javascript->codeBlock("setTimeout('Effect.Fade(\"flashMessage\");', 5000);");
 echo $javascript->blockEnd();
 
 ?>

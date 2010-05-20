@@ -1,7 +1,7 @@
 <?php
 
   // If items is set then print filtered and paginated Items.
-if (isset($items)) {
+if (isset($data)) {
     // Print filter
     echo $this->element('item_filter');
     // Set what to update with paginator links
@@ -19,6 +19,7 @@ if (isset($items)) {
         $this->set('item', $item);
         echo $html->div('item', $this->element('item_preview'),
 			array('id' => 'item'.$item['Item']['id']));
+        echo $javascript->blockEnd();
     }
     // Print the paginator links
     echo $html->div('paginator',

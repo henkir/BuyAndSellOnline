@@ -15,10 +15,6 @@ ul {
     list-style-type: none;
 }
 
-#flashMessage {
-    height: 30px;
-}
-
 #menu ul {
     color: #2222ee;
     list-style-type: none;
@@ -29,6 +25,11 @@ ul {
 #menu ul ul {
     list-style-type: circle;
     padding-left: 2em;
+}
+
+#menu ul input {
+    font-size: 85%;
+    width: 8em;
 }
 
 .loginTextbox {
@@ -50,7 +51,7 @@ ul {
 }
 
 .item {
-    background: #cccccc;
+    background: #dddddd;
     padding: 0.5em;
     margin: 0.5em 0 0.5em 0;
 }

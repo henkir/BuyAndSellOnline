@@ -7,7 +7,7 @@ class AppController extends Controller {
     var $components = array('RequestHandler', 'Auth', 'Session');
     // We will use these helpers in almost all views.
     var $helpers = array('Html', 'Javascript', 'Ajax',
-                   'Form', 'Time', 'Text');
+                   'Form', 'Time', 'Text', 'Number');
 
     /**
      * Checks if the request was an AJAX request, if so we want no debug prints.
@@ -23,14 +23,24 @@ class AppController extends Controller {
 
     function beforeFilter() {
         parent::beforeFilter();
+        $this->_configure();
+        $this->_checkAjax();
+        $this->_setUpAuth();
+        $this->_setPrivileges();
+        App::import('Vendor', 'Facebook');
         $this->set('title', 'BuyAndSellOnline');
+
+    }
+
+    function _configure() {
         // Set the relative URL from the web root directory. Empty if root.
         Configure::write('relativeUrl', '/BuyAndSellOnline');
         // Set the IP of the server. Needed for OpenID.
         Configure::write('ip', '94.254.42.77');
-        $this->_checkAjax();
-        $this->_setUpAuth();
-        $this->_setPrivileges();
+        Configure::write('itemsPerPage', 8);
+        Configure::write('usersPerPage', 8);
+        Configure::write('tagsPerPage', 20);
+        Configure::write('categoriesPerPage', 20);
     }
 
     /**

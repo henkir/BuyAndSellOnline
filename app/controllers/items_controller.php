@@ -3,12 +3,6 @@ class ItemsController extends AppController {
     var $name = 'Items';
     var $components = array('FileUpload');
     var $helpers = array('Number');
-    /**
-     * Paginates the Items with a limit of 8 Items per page, sorted descending
-     * on creation date.
-     */
-    var $paginate = array('limit' => 8,
-                          'order' => array('Item.created' => 'desc'));
 
     function beforeFilter() {
         parent::beforeFilter();
@@ -33,7 +27,8 @@ class ItemsController extends AppController {
                                          array('limit' => 20,
                                                'order' => 'Item.created DESC')));
         } else {
-            $this->set('items', $this->Item->find('all'));
+            $this->paginate = array('limit' => Configure::read('itemsPerPage'),
+                              'order' => array('Item.created' => 'desc'));
             $data = $this->paginate(null, $this->_filterSearch());
             $this->set('data', $data);
         }
@@ -69,8 +64,16 @@ class ItemsController extends AppController {
         // If the data submitted isn't empty, then we use the new keyword.
         // Otherwise, check if there is an old one in the session and use
         // that instead.
-        if (!empty($this->data) && strlen($this->data['Item']['keyword']) > 0) {
-            $search = $this->data['Item']['keyword'];
+        if (!empty($this->data)) {
+            if (!empty($this->data['Item']['keyword'])
+                && strlen($this->data['Item']['keyword']) > 0) {
+
+                $search = $this->data['Item']['keyword'];
+            } elseif (!empty($this->data['Search']['keyword'])
+                && strlen($this->data['Search']['keyword']) > 0) {
+
+                $search = $this->data['Search']['keyword'];
+            }
         } elseif ($this->Session->check($this->name.'.keyword')) {
             $search = $this->Session->read($this->name.'.keyword');
         }
@@ -112,9 +115,17 @@ class ItemsController extends AppController {
      *
      * @param id the id of the Item
      */
-    function edit($id) {
-        $this->set('items', $this->Item->find('all'));
+    function edit($id = null) {
+        $this->Item->id = $id;
         if (!empty($this->data)) {
+            $this->Item->id = $this->data['Item']['id'];
+            $oldData = $this->Item->read();
+            if ($this->FileUpload->success) {
+                $this->_deleteImage($oldData['Item']['image']);
+                $this->data['Item']['image'] = $this->FileUpload->finalFile;
+            } else {
+                $this->data['Item']['image'] = $oldData['Item']['image'];
+            }
             if ($this->Item->save($this->data)) {
                 $this->Session->setFlash('The item has been saved.',
 					 'default', array('class' => 'success'));
@@ -122,7 +133,37 @@ class ItemsController extends AppController {
                 $this->Session->setFlash('Failed saving the item.',
 					 'default', array('class' => 'error'));
             }
+            $this->redirect('/');
         }
+
+        if ($id != null) {
+            $this->data = $this->Item->read();
+            $this->set('item', $this->Item->read());
+            $this->set('category_id', $this->Item->Category->find('list'));
+            $this->set('tags', $this->Item->Tag->find('list'));
+            $this->set('selectedTags', $this->Item->Tag->find('list',
+                    array('joins' => array(
+                            array(
+                                'table' => 'items_tags',
+                                'alias' => 'ItemsTag',
+                                'type' => 'inner',
+                                'conditions'=> array('ItemsTag.tag_id = Tag.id')
+                            ),
+                            array(
+                                'table' => 'items',
+                                'alias' => 'Item',
+                                'type' => 'inner',
+                                'conditions'=> array(
+                                    'Item.id = ItemsTag.item_id',
+                                    'Item.id = ' => $id
+                                ))))));
+        }
+
+    }
+
+    function editPreview($id) {
+        $this->Item->id = $id;
+        $this->set('item', $this->Item->read());
     }
 
     /**
@@ -132,33 +173,34 @@ class ItemsController extends AppController {
         $this->set('categories', $this->Item->Category->find('list'));
         $this->set('tags', $this->Item->Tag->find('list'));
         if (!empty($this->data)) {
-	    print_r($this->data);
+            print_r($this->data);
             if ($this->FileUpload->success) {
                 $this->data['Item']['image'] = $this->FileUpload->finalFile;
             } else {
-		$this->data['Item']['image'] = null;
-	    }
+                $this->data['Item']['image'] = null;
+            }
 
-	    if ($this->Session->check('Auth.User.id')) {
-		$this->data['Item']['user_id'] = $this->Session->read('Auth.User.id');
-		if ($this->Item->save($this->data)) {
-		    $this->Session->setFlash('The item has been saved.',
-					     'default', array('class' => 'success'));
-            $this->redirect('/');
-		} else {
-		    if (!empty($this->data['Item']['image'])) {
-			$this->_deleteImage($this->data['Item']['image']);
-		    }
-		    $this->Session->setFlash('The item could not be saved.',
-					     'default', array('class' => 'error'));
-		}
-	    } else {
-		if (!empty($this->data['Item']['image'])) {
-		    $this->_deleteImage($this->data['Item']['image']);
+            if ($this->Session->check('Auth.User.id')) {
+                $this->data['Item']['user_id'] = $this->Session->read('Auth.User.id');
+                $this->data['Item']['category_id'] = $this->data['Item']['categories'];
+                if ($this->Item->save($this->data)) {
+                    $this->Session->setFlash('The item has been saved.',
+                        'default', array('class' => 'success'));
+                    $this->redirect('/');
+                } else {
+                    if (!empty($this->data['Item']['image'])) {
+                        $this->_deleteImage($this->data['Item']['image']);
+                    }
+                    $this->Session->setFlash('The item could not be saved.',
+                        'default', array('class' => 'error'));
+                }
+            } else {
+                if (!empty($this->data['Item']['image'])) {
+                    $this->_deleteImage($this->data['Item']['image']);
                 }
                 $this->Session->setFlash('You need to be logged in.',
-					 'default', array('class' => 'error'));
-	    }
+                    'default', array('class' => 'error'));
+            }
 
 
         }
@@ -179,12 +221,12 @@ class ItemsController extends AppController {
      */
     function delete($id) {
         if ($this->Item->delete($id)) {
-	    $this->Session->setFlash('The item has been deleted.',
-				     'default', array('class' => 'success'));
-	} else {
-	    $this->Session->setFlash('Failed deleting the item.',
-				     'default', array('class' => 'error'));
-	}
+            $this->Session->setFlash('The item has been deleted.',
+                'default', array('class' => 'success'));
+        } else {
+            $this->Session->setFlash('Failed deleting the item.',
+                'default', array('class' => 'error'));
+        }
         $this->redirect(array('action' => 'edit'));
     }
 
@@ -202,6 +244,23 @@ class ItemsController extends AppController {
      */
     function buy($id) {
 
+    }
+
+    function mine($id = null) {
+        if ($id != null && $this->RequestHandler->isAjax()) {
+            $this->Item->id = $id;
+            $this->set('item', $this->Item->read());
+        } else {
+            $userId = $this->Session->read('Auth.User.id');
+            $data = $this->paginate('Item',
+                    array('Item.user_id = ' => $userId));
+            $this->set('data', $data);
+        }
+    }
+
+    function viewmine($id) {
+        $this->Item->id = $id;
+        $this->set('item', $this->Item->read());
     }
 
 }

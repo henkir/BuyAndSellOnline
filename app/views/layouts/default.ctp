@@ -21,6 +21,10 @@ echo '<html xmlns="http://www.w3.org/1999/xhtml"><head>';
 echo $html->charset();
 // Print the title.
 echo $html->tag('title', $title_for_layout);
+echo '<meta property="og:image" content="http://' . $ip . $relativeUrl . '/img/banner_small.png"/>';
+echo $html->meta(null, null, array('name' => 'description',
+        'content' =>
+        'BuyAndSellOnline allows you to sign in using OpenID or Facebook, buying and selling items.'));
 // Print location of favicon.
 echo '<link rel="shortcut icon" href="' . $relativeUrl . '/favicon.ico" type="image/x-icon" />';
 echo '<link rel="alternate" type="application/rss+xml" title="BuyAndSellOnline" href="http://' . $ip . $relativeUrl . '/items/index.rss" />';
@@ -80,10 +84,23 @@ echo $ajax->divEnd('news');
 echo $ajax->div('footer', array('class' => 'span-24 last'));
 echo $ajax->divEnd('footer');
 echo $ajax->divEnd('container');
-/*echo $javascript->codeBlock("if(document.iframesfix) {
-var windowlocator = new PageLocator('window.location.href', '#');
-document.write(\"<iframe id='ajaxnav' name='ajaxnav' src='mock-page.php?hash=\"+windowlocator.getHash()+\"' style='display: none;'></iframe>\");
-}");
-echo $javascript->blockEnd();*/
+echo $html->div(null, '', array('id' => 'fb-root'));
+echo $javascript->codeBlock("
+window.fbAsyncInit = function() {
+        FB.init({appId: '120588011307924', status: true, cookie: true,
+                 xfbml: true});
+      };
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol +
+          '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+      }());
+FB.Event.subscribe('auth.login', function(response) {
+        window.location.reload();
+      });");
+echo $javascript->blockEnd();
 echo '</body></html>';
 ?>
