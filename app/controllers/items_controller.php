@@ -1,7 +1,7 @@
 <?php
 class ItemsController extends AppController {
     var $name = 'Items';
-    var $components = array('FileUpload');
+    var $components = array('FileUpload', 'Paypal');
     var $helpers = array('Number');
 
     function beforeFilter() {
@@ -23,9 +23,9 @@ class ItemsController extends AppController {
         } elseif($this->RequestHandler->isRss()) {
             Configure::write('debug', 0);
             $this->set('items',
-                       $this->Item->find('all',
-                                         array('limit' => 20,
-                                               'order' => 'Item.created DESC')));
+                $this->Item->find('all',
+                    array('limit' => 20,
+                        'order' => 'Item.created DESC')));
         } else {
             $this->paginate = array('limit' => Configure::read('itemsPerPage'),
                               'order' => array('Item.created' => 'desc'));
@@ -40,11 +40,11 @@ class ItemsController extends AppController {
      * @return the latest Items
      */
     function latest() {
-	$items = $this->Item->find('all',
-				   array('limit' => 6,
+        $items = $this->Item->find('all',
+                 array('limit' => 6,
 					 'order' => 'Item.created DESC'));
-	$this->set('items', $items);
-	return $items;
+        $this->set('items', $items);
+        return $items;
     }
 
     /**
@@ -82,8 +82,8 @@ class ItemsController extends AppController {
         if (isset($search)) {
             $search = strtolower($search);
             $filters = array("LOWER(Item.name) LIKE '%".$search."%'".
-                             "OR Item.price LIKE '%".$search."%'".
-                             "OR Item.description LIKE '%".$search."%'");
+                       "OR Item.price LIKE '%".$search."%'".
+                       "OR Item.description LIKE '%".$search."%'");
             $this->Session->write($this->name.'.keyword', $search);
         }
 
@@ -128,10 +128,10 @@ class ItemsController extends AppController {
             }
             if ($this->Item->save($this->data)) {
                 $this->Session->setFlash('The item has been saved.',
-					 'default', array('class' => 'success'));
+                    'default', array('class' => 'success'));
             } else {
                 $this->Session->setFlash('Failed saving the item.',
-					 'default', array('class' => 'error'));
+                    'default', array('class' => 'error'));
             }
             $this->redirect('/');
         }
@@ -207,11 +207,11 @@ class ItemsController extends AppController {
     }
 
     function _deleteImage($name) {
-	$file = new File(WWW_ROOT .
-			 $this->FileUpload->uploadDir . '/' .
-			 $name);
-	$file->delete();
-	$file->close();
+        $file = new File(WWW_ROOT .
+                $this->FileUpload->uploadDir . '/' .
+                $name);
+        $file->delete();
+        $file->close();
     }
 
     /**
@@ -237,15 +237,6 @@ class ItemsController extends AppController {
 
     }
 
-    /**
-     * Buys the Item with the given id.
-     *
-     * @param id the id of the Item
-     */
-    function buy($id) {
-
-    }
-
     function mine($id = null) {
         if ($id != null && $this->RequestHandler->isAjax()) {
             $this->Item->id = $id;
@@ -263,4 +254,62 @@ class ItemsController extends AppController {
         $this->set('item', $this->Item->read());
     }
 
-}
+    /**
+     * Buys the Item with the given id.
+     *
+     * @param id the id of the Item
+     */
+    function buy($id) {
+        $test = $this->Item->findById($id);
+        echo $test->data->amount;
+
+        $paymentInfo = array('Member'=>
+                       array(
+                           'first_name'=>'Robin',
+                           'last_name'=>'Axelsson',
+                           'billing_address'=>'1 Main St.',
+                           'billing_address2'=>'',
+                           'billing_country'=>'US',
+                           'billing_city'=>'San Jose',
+                           'billing_state'=>'CA',
+                           'billing_zip'=>'95131'
+                       ),
+                       'CreditCard'=>
+                       array(
+                           'card_number'=>'4188840036423288',
+                           'expiration_month'=>'05',
+                           'expiration_year'=>'2015',
+                           'cv_code'=>'3288'
+                       ),
+                       'Order'=>
+                       array('theTotal'=>1.00)
+        );
+
+        /*
+         * On Success, $result contains [AMT] [CURRENCYCODE] [AVSCODE] [CVV2MATCH]
+         * [TRANSACTIONID] [TIMESTAMP] [CORRELATIONID] [ACK] [VERSION] [BUILD]
+         *
+         * On Fail, $ result contains [AMT] [CURRENCYCODE] [TIMESTAMP] [CORRELATIONID]
+         * [ACK] [VERSION] [BUILD] [L_ERRORCODE0] [L_SHORTMESSAGE0] [L_LONGMESSAGE0]
+         * [L_SEVERITYCODE0]
+         *
+         * Success or Failure is best tested using [ACK].
+         * ACK will either be "Success" or "Failure"
+         */
+
+        $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment");
+        $ack = strtoupper($result["ACK"]);
+
+        if($ack=="SUCCESSWITHWARNING") {
+            /* successful do something here! */
+            echo 'Transaction Success';
+
+
+        } else {
+            $error = $result['L_LONGMESSAGE0'];
+            echo $ack;
+        }
+    }
+
+
+  }

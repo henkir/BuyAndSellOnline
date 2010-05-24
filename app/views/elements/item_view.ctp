@@ -22,6 +22,7 @@ echo $html->div('seller', 'Seller: ' .$ajax->link($user,
             'action' => 'items', $item['User']['id']),
         array('update' => 'content')));
 $created = $time->format('Y-m-d H:i', $item['Item']['created']);
+$modified = '';
 if ($item['Item']['modified']) {
     $modified = $time->format('Y-m-d H:i', $item['Item']['modified']);
     if (strtotime($modified) - strtotime($created) < 60) {

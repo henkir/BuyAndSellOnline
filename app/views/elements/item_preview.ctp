@@ -23,7 +23,8 @@ if (strlen($item['Item']['description']) > $descriptionLength) {
 if (!empty($item['Item']['image'])) {
     $imageClick = $ajax->link($html->image('/img/uploads/'.$item['Item']['image'],
                       array('class' => 'item_small_img')),
-			      array('action' => 'view', $item['Item']['id']),
+			      array('controller' => 'items',
+                      'action' => 'view', $item['Item']['id']),
 			      array('update' => 'item'.$item['Item']['id'],
                       'complete' => "Effect.Appear('item" . $item['Item']['id'] ."')"),
 			      null,
