@@ -21,14 +21,18 @@ class ItemsController extends AppController {
             $this->Item->id = $id;
             $this->set('item', $this->Item->read());
         } elseif($this->RequestHandler->isRss()) {
+            $this->RequestHandler->respondAs('rss');
+            header('Content-type: application/xml');
             Configure::write('debug', 0);
             $this->set('items',
                 $this->Item->find('all',
                     array('limit' => 20,
-                        'order' => 'Item.created DESC')));
+                        'order' => 'Item.created DESC',
+                        'conditions' => array('Item.sold = ' => false))));
         } else {
             $this->paginate = array('limit' => Configure::read('itemsPerPage'),
-                              'order' => array('Item.created' => 'desc'));
+                              'order' => array('Item.created' => 'desc'),
+                              'conditions' => array('Item.sold = ' => false));
             $data = $this->paginate(null, $this->_filterSearch());
             $this->set('data', $data);
         }
@@ -42,7 +46,8 @@ class ItemsController extends AppController {
     function latest() {
         $items = $this->Item->find('all',
                  array('limit' => 6,
-					 'order' => 'Item.created DESC'));
+					 'order' => 'Item.created DESC',
+                     'conditions' => array('Item.sold = ' => false)));
         $this->set('items', $items);
         return $items;
     }
@@ -173,7 +178,6 @@ class ItemsController extends AppController {
         $this->set('categories', $this->Item->Category->find('list'));
         $this->set('tags', $this->Item->Tag->find('list'));
         if (!empty($this->data)) {
-            print_r($this->data);
             if ($this->FileUpload->success) {
                 $this->data['Item']['image'] = $this->FileUpload->finalFile;
             } else {
@@ -237,79 +241,83 @@ class ItemsController extends AppController {
 
     }
 
-    function mine($id = null) {
-        if ($id != null && $this->RequestHandler->isAjax()) {
-            $this->Item->id = $id;
-            $this->set('item', $this->Item->read());
-        } else {
-            $userId = $this->Session->read('Auth.User.id');
-            $data = $this->paginate('Item',
-                    array('Item.user_id = ' => $userId));
-            $this->set('data', $data);
-        }
-    }
-
-    function viewmine($id) {
-        $this->Item->id = $id;
-        $this->set('item', $this->Item->read());
-    }
-
     /**
      * Buys the Item with the given id.
      *
      * @param id the id of the Item
      */
-    function buy($id) {
-        $test = $this->Item->findById($id);
-        echo $test->data->amount;
+    function buy($id, $confirm = null) {
+        $this->Item->id = $id;
+        $item = $this->Item->read();
+        if ($item['Item']['sold'] == 0) {
+            if ($confirm == null) {
+                $this->Item->id = $id;
+                $this->set('item', $this->Item->read());
+                $this->set('user',
+                    $this->Item->User->findById($this->Session->read('Auth.User.id')));
+                $this->set('countries', $this->Item->User->Country->find('list'));
+            } else {
+                $paymentInfo = array('Member'=>
+                               array(
+                                   'first_name' => $this->data['User']['first_name'],
+                                   'last_name' => $this->data['User']['last_name'],
+                                   'billing_address' => $this->data['User']['address'],
+                                   'billing_address2' => '',
+                                   'billing_country' => $this->data['User']['countries'],
+                                   'billing_city' => $this->data['User']['city'],
+                                   'billing_state' => 'CA',
+                                   'billing_zip' => $this->data['User']['zip']
+                               ),
+                               'CreditCard'=>
+                               array(
+                                   'card_number' =>'4188840036423288',
+                                   'credit_type' => 'Visa',
+                                   'expiration_month' =>'05',
+                                   'expiration_year' =>'2015',
+                                   'cv_code' =>'3288'
+                               ),
+                               'Order'=>
+                               array('theTotal' => $item['Item']['price'])
+                );
 
-        $paymentInfo = array('Member'=>
-                       array(
-                           'first_name'=>'Robin',
-                           'last_name'=>'Axelsson',
-                           'billing_address'=>'1 Main St.',
-                           'billing_address2'=>'',
-                           'billing_country'=>'US',
-                           'billing_city'=>'San Jose',
-                           'billing_state'=>'CA',
-                           'billing_zip'=>'95131'
-                       ),
-                       'CreditCard'=>
-                       array(
-                           'card_number'=>'4188840036423288',
-                           'expiration_month'=>'05',
-                           'expiration_year'=>'2015',
-                           'cv_code'=>'3288'
-                       ),
-                       'Order'=>
-                       array('theTotal'=>1.00)
-        );
+                /*
+                 * On Success, $result contains [AMT] [CURRENCYCODE] [AVSCODE] [CVV2MATCH]
+                 * [TRANSACTIONID] [TIMESTAMP] [CORRELATIONID] [ACK] [VERSION] [BUILD]
+                 *
+                 * On Fail, $ result contains [AMT] [CURRENCYCODE] [TIMESTAMP] [CORRELATIONID]
+                 * [ACK] [VERSION] [BUILD] [L_ERRORCODE0] [L_SHORTMESSAGE0] [L_LONGMESSAGE0]
+                 * [L_SEVERITYCODE0]
+                 *
+                 * Success or Failure is best tested using [ACK].
+                 * ACK will either be "Success" or "Failure"
+                 */
 
-        /*
-         * On Success, $result contains [AMT] [CURRENCYCODE] [AVSCODE] [CVV2MATCH]
-         * [TRANSACTIONID] [TIMESTAMP] [CORRELATIONID] [ACK] [VERSION] [BUILD]
-         *
-         * On Fail, $ result contains [AMT] [CURRENCYCODE] [TIMESTAMP] [CORRELATIONID]
-         * [ACK] [VERSION] [BUILD] [L_ERRORCODE0] [L_SHORTMESSAGE0] [L_LONGMESSAGE0]
-         * [L_SEVERITYCODE0]
-         *
-         * Success or Failure is best tested using [ACK].
-         * ACK will either be "Success" or "Failure"
-         */
+                $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment");
+                $ack = strtoupper($result["ACK"]);
 
-        $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment");
-        $ack = strtoupper($result["ACK"]);
+                if($ack=="SUCCESSWITHWARNING" || $ack=="SUCCESS") {
+                    $this->Item->id = $id;
+                    $this->Item->saveField('sold', true);
+                    $item = $this->Item->read();
+                    $purchase = array('Purchase' =>
+                                array('user_id' =>
+                                    $this->Session->read('Auth.User.id'),
+                                    'item_id' => $id));
+                    $this->Item->Purchase->save($purchase);
+                    $this->set('item', $item);
+                    $this->set('seller', $this->Item->User->findById($item['User']['id']));
+                    $this->set('confirm', true);
 
-        if($ack=="SUCCESSWITHWARNING") {
-            /* successful do something here! */
-            echo 'Transaction Success';
-
-
+                } else {
+                    $this->set('error', $result['L_LONGMESSAGE0']);
+                }
+            }
         } else {
-            $error = $result['L_LONGMESSAGE0'];
-            echo $ack;
+            $this->set('purchased', true);
         }
     }
 
 
   }
+
+?>

@@ -8,6 +8,10 @@ CREATE TABLE `groups` ( `id` INT(1) NOT NULL,
                         `name` VARCHAR(20) NOT NULL UNIQUE,
                         PRIMARY KEY(`id`)
                         ) ENGINE=MyISAM;
+CREATE TABLE `countries` (	`id` CHAR(2) NOT NULL,
+       	     		 	`name` VARCHAR(50) NOT NULL,
+				PRIMARY KEY(`id`)
+				) ENGINE=MyISAM;
 -- Create users, mostly holding OpenID and group.
 CREATE TABLE `users` (  `id` integer auto_increment,
                         `username` varchar(20),
@@ -15,9 +19,16 @@ CREATE TABLE `users` (  `id` integer auto_increment,
 			`email` varchar(50),
 			`openid` char(80),
 			`facebookid` char(20),
-                        `fullname` varchar(40),
 			`nickname` varchar(20),
+			`first_name` varchar(20),
+			`last_name` varchar(20),
+			`address` varchar(30),
+			`country_id` char(2),
+			`city` varchar(20),
+			`zip` char(8),
                         `group_id` INT(1) DEFAULT 1,
+			`created` DATETIME,
+			`modified` DATETIME,
                         PRIMARY KEY (`id`)
                         ) ENGINE=MyISAM;
 -- Create categories, that items can belong to.
@@ -38,7 +49,7 @@ CREATE TABLE `items` (  `id` INTEGER NOT NULL AUTO_INCREMENT,
                         `image` CHAR(36) DEFAULT NULL,
 			`created` DATETIME NOT NULL,
 			`modified` DATETIME,
-			`agreed` BOOLEAN NOT NULL,
+			`agreed` BOOLEAN NOT NULL DEFAULT 0,
                         PRIMARY KEY(`id`)
                         ) ENGINE=MyISAM;
 -- Create tags, that describe an item.

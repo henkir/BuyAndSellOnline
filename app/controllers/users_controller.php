@@ -19,12 +19,16 @@ class UsersController extends AppController {
      * Gets all Users.
      */
     function index() {
-        $this->set('users', $this->User->find('all'));
+        $paginate = array('limit' => Configure::read('usersPerPage'),
+                          'order' => array('User.created' => 'desc'));
+        $data = $this->paginate();
+        $this->set('data', $data);
     }
 
     function items($id = null) {
         $this->paginate = array('limit' => Configure::read('itemsPerPage'),
-                          'order' => array('Item.created' => 'desc'));
+                          'order' => array('Item.created' => 'desc'),
+                          'conditions' => array('Item.sold = ' => false));
         if ($id == null) {
             if ($this->Session->check('Auth.User.id')) {
                 $id = $this->Session->read('Auth.User.id');
@@ -57,14 +61,33 @@ class UsersController extends AppController {
      *
      * @param id the id of the User
      */
-    function edit($id) {
-        $this->set('users', $this->User->find('all'));
+    function edit($id = null) {
+        $paginate = array('limit' => Configure::read('usersPerPage'),
+                    'order' => array('User.created' => 'desc'),
+                    'conditions' =>
+                    array('User.group_id <= ' =>
+                        $this->Session->read('Auth.User.group_id')));
         if (!empty($this->data)) {
+            $this->data['User']['group_id'] = $this->data['User']['groups'];
             if ($this->User->save($this->data)) {
-                $this->Session->setFlash('The user has been saved.');
+                $this->Session->setFlash('The user has been saved.',
+                    'default', array('class' => 'success'));
             } else {
-                $this->Session->setFlash('Failed saving the user.');
+                $this->Session->setFlash('Failed saving the user.',
+                    'default', array('class' => 'error'));
             }
+
+        }
+        if ($id == null) {
+            $this->set('data', $this->paginate());
+        } else {
+            $this->User->id = $id;
+            $this->set('groups', $this->User->Group->find('list',
+                    array('conditions' =>
+                        array('Group.id <= ' =>
+                            $this->Session->read('Auth.User.group_id')))));
+            $this->set('user', $this->User->read());
+            $this->set('users', $this->User->find('list'));
         }
     }
 
@@ -88,7 +111,8 @@ class UsersController extends AppController {
      */
     function delete($id) {
         $this->User->delete($id);
-        $this->Session->setFlash('The user has been deleted.');
+        $this->Session->setFlash('The user has been deleted.',
+            'default', array('class' => 'success'));
         $this->redirect(array('action' => 'edit'));
     }
 
@@ -159,7 +183,9 @@ class UsersController extends AppController {
                             $facebookCookie['access_token']));
                 $this->autoRender = false;
                 $data['email'] = $user->email;
-                $data['fullname'] = $user->name;
+                $name = explode(' ', $user->name);
+                $data['first_name'] = $name[0];
+                $data['last_name'] = $name[1];
                 $this->_testUser($data);
                 $this->Session->setFlash(
                     'Successfully authenticated with Facebook.',
@@ -230,6 +256,11 @@ class UsersController extends AppController {
     // Recreate user given data.
     function _recreate($data) {
         $this->data['User'] = $data;
+        if (!empty($this->data['fullname'])) {
+            $name = explode(' ', $this->data['fullname']);
+            $this->data['first_name'] = $name[0];
+            $this->data['last_name'] = $name[1];
+        }
         $this->User->save($this->data['User']);
     }
 

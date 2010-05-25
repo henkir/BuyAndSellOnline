@@ -15,21 +15,9 @@ ul {
     list-style-type: none;
 }
 
-#menu ul {
-    color: #2222ee;
-    list-style-type: none;
-    margin-left: 0;
-    padding-left: 0;
-}
-
-#menu ul ul {
-    list-style-type: circle;
-    padding-left: 2em;
-}
-
 #menu ul input {
-    font-size: 85%;
-    width: 8em;
+    font-size: 90%;
+    width: 9.5em;
 }
 
 .loginTextbox {
@@ -117,12 +105,73 @@ div.spinner {
     font-weight: bold;
 }
 
-.categories {
+.editList {
     list-style-type: none;
 }
 
-.categories li span {
+.editList li span {
     display: block;
     float: left;
     width: 150px;
 }
+
+/* MENU */
+
+#cssm1 *  { padding:0; margin: 0; }
+
+#cssm1 {
+    z-index: 99;
+    float: left;
+    margin:0;
+    line-height: 1.5em;
+}
+
+#cssm1 a {
+    display: block;
+    border-bottom: 2px solid #fff;
+    background: #abc;
+    text-decoration: none;
+    padding: 0.25em 0.5em;
+}
+
+#cssm1 a:hover {
+    background: #789;
+}
+
+#cssm1 span {
+    display: block;
+    border-bottom: 2px solid #fff;
+    background: #abc;
+    text-decoration: none;
+    padding: 0.25em 0.5em;
+}
+
+
+#cssm1 ul li, #cssm1 ul li ul li  {
+    width: 9em;
+}
+
+#cssm1 ul{
+    display:block;
+    list-style-type:none;
+    width: 9em;
+}
+
+#cssm1 ul li ul, #cssm1:hover ul li ul, #cssm1:hover ul li:hover ul li ul {
+    display:none;
+}
+
+#cssm1:hover ul, #cssm1:hover ul li:hover ul, #cssm1:hover ul li:hover ul li:hover ul {
+    display:block;
+}
+
+#cssm1:hover ul li:hover ul, #cssm1:hover ul li:hover ul li:hover ul {
+    position: relative;
+    left: 9em; top: 0em;
+}
+
+#cssm1 ul li ul, #cssm1 ul li ul li ul {
+    clear: left;
+    margin-top: -2.25em;
+}
+

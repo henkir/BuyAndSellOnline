@@ -40,7 +40,9 @@ class CategoriesController extends AppController {
      * @param id the id of the Category
      */
     function edit($id = null) {
-	if (!empty($this->data)) {
+        $paginate = array('limit' => Configure::read('categoriesPerPage'),
+                          'order' => array('Category.name' => 'asc'));
+        if (!empty($this->data)) {
             if ($this->Category->save($this->data)) {
                 $this->Session->setFlash('The category has been saved.',
                     'default', array('class' => 'success'));
@@ -50,13 +52,13 @@ class CategoriesController extends AppController {
             }
 
         }
-	if ($id == null) {
-	    $this->set('categories', $this->Category->find('all'));
-	} else {
-	    $this->Category->id = $id;
-	    $this->set('category', $this->Category->read());
-	    $this->set('categories', $this->Category->find('list'));
-	}
+        if ($id == null) {
+            $this->set('data', $this->paginate());
+        } else {
+            $this->Category->id = $id;
+            $this->set('category', $this->Category->read());
+            $this->set('categories', $this->Category->find('list'));
+        }
     }
 
     /**

@@ -1,16 +1,16 @@
 <?php
 /**
  * A simple OpenID consumer component for CakePHP.
- * 
+ *
  * Requires at least version 2.1.0 of PHP OpenID library from http://openidenabled.com/php-openid/
- * 
+ *
  * To use the MySQLStore, the following steps are required:
  * - get PEAR DB: http://pear.php.net/package/DB
- * - run the openid.sql script to create the required tables 
+ * - run the openid.sql script to create the required tables
  * - use one of the following config settings when adding the component to the $components array of your controller(s):
  *     public $components = array('Openid' => array('use_database' => true)); // uses the "default" database configuration
  *     public $components = array('Openid' => array('database_config' => 'name_of_database_config'));
- * 
+ *
  * To accept Google Apps OpenIDs, use the following config setting:
  *     public $components = array('Openid' => array('accept_google_apps' => true));
  *
@@ -33,7 +33,7 @@ class OpenidComponent extends Object {
 	const AX = 'ax';
 	const SREG_REQUIRED = 'sreg_required';
 	const SREG_OPTIONAL = 'sreg_optional';
-	
+
 	public function __construct() {
 		parent::__construct();
 
@@ -50,7 +50,7 @@ class OpenidComponent extends Object {
 		$this->addToIncludePath($pathToVendorsFolder);
 		$this->importCoreFilesFromOpenIDLibrary();
 	}
-	
+
 	public function initialize($controller, $settings) {
 		if (isset($settings['use_database'])) {
 			$this->useDatabase = $settings['use_database'];
@@ -69,11 +69,11 @@ class OpenidComponent extends Object {
 	public function startUp($controller) {
 		$this->controller = $controller;
 	}
-	
+
 	/**
 	 * @param $dataFields An associative array, valid keys are "sreg_required" and "sreg_optional" for
 	 * SReg (simple registration), and "ax" for attribute exchange.
-	 * Examples: 
+	 * Examples:
 	 *   $dataFields = array('sreg_required' => array('email'), 'sreg_optional' => array('nickname'));
 	 *   $dataFields = array('ax' => array(Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson')));
 	 * @throws InvalidArgumentException if an invalid OpenID was provided
@@ -81,7 +81,7 @@ class OpenidComponent extends Object {
 	public function authenticate($openidUrl, $returnTo, $realm, $dataFields = array()) {
 		$defaults = array(self::AX => array(), self::SREG_REQUIRED => array(), self::SREG_OPTIONAL => array());
 		$dataFields = array_merge($defaults, $dataFields);
-		
+
 		if (trim($openidUrl) != '') {
 			if ($this->isEmail($openidUrl)) {
 				$openidUrl = $this->transformEmailToOpenID($openidUrl);
@@ -90,23 +90,23 @@ class OpenidComponent extends Object {
 			$consumer = $this->getConsumer();
 			$authRequest = $consumer->begin($openidUrl);
 		}
-		
+
 		if (!isset($authRequest) || !$authRequest) {
 		    throw new InvalidArgumentException('Invalid OpenID');
 		}
-		
+
 		$this->addSReg($authRequest, $dataFields);
 		$this->addAX($authRequest, $dataFields);
-		
+
 		if ($authRequest->shouldSendRedirect()) {
 			$this->redirect($authRequest, $returnTo, $realm);
 		} else {
 			$this->showFormWithAutoSubmit($authRequest, $returnTo, $realm);
 		}
 	}
-	
+
 	/**
-	 * Removes expired associations and nonces. 
+	 * Removes expired associations and nonces.
 	 *
 	 * This method is not called in the normal operation of the component. It provides a way
 	 * for store admins to keep their storage from filling up with expired data.
@@ -120,45 +120,45 @@ class OpenidComponent extends Object {
 	public function getResponse($currentUrl) {
 		$consumer = $this->getConsumer();
 		$response = $consumer->complete($currentUrl, $this->getQuery());
-		
+
 		return $response;
 	}
-	
+
 	public function isOpenIDResponse() {
 		if (count($_GET) > 1 && isset($this->controller->params['url']['openid_ns'])) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	private function addAX($authRequest, $dataFields) {
 		if (count($dataFields[self::AX]) > 0) {
 			$ax = new Auth_OpenID_AX_FetchRequest;
-	
+
 			foreach($dataFields[self::AX] as $attribute){
         		$ax->add($attribute);
 			}
-		
+
 			$authRequest->addExtension($ax);
 		}
 	}
-	
+
 	private function addSReg($authRequest, $dataFields) {
 		$sregRequest = Auth_OpenID_SRegRequest::build($dataFields[self::SREG_REQUIRED], $dataFields[self::SREG_OPTIONAL]);
-		
+
 		if ($sregRequest) {
 			$authRequest->addExtension($sregRequest);
 		}
 	}
-	
+
 	private function addToIncludePath($pathToVendorsFolder) {
 		$pathExtra = $pathToVendorsFolder . PATH_SEPARATOR . $pathToVendorsFolder . 'pear' . DS;
 		$path = ini_get('include_path');
 		$path = $pathExtra . PATH_SEPARATOR . $path;
 		ini_set('include_path', $path);
 	}
-	
+
 	private function getConsumer() {
 		$consumer = new Auth_OpenID_Consumer($this->getStore());
 
@@ -176,14 +176,14 @@ class OpenidComponent extends Object {
 		if (!file_exists($storePath) && !mkdir($storePath)) {
 		    throw new Exception('Could not create the FileStore directory '.$storePath.'. Please check the effective permissions.');
 		}
-	
+
 		return new Auth_OpenID_FileStore($storePath);
 	}
-	
+
 	private function getMySQLStore() {
 		App::import('Vendor', $this->importPrefix.'mysqlstore', array('file' => 'Auth'.DS.'OpenID'.DS.'MySQLStore.php'));
 		$dataSource = ConnectionManager::getDataSource($this->databaseConfig);
-			
+
 		$dsn = array(
 	    	'phptype'  => 'mysql',
 	    	'username' => $dataSource->config['login'],
@@ -200,13 +200,13 @@ class OpenidComponent extends Object {
 
 		return new Auth_OpenID_MySQLStore($db);
 	}
-	
+
 	private function getPathToVendorsFolderWithOpenIDLibrary() {
 		$pathToVendorsFolder = '';
-		
+
 		if ($this->isPathWithinPlugin(__FILE__)) {
 			$pluginName = $this->getPluginName();
-			
+
 			if (file_exists(APP.'plugins'.DS.$pluginName.DS.'vendors'.DS.'Auth')) {
 				$pathToVendorsFolder = APP.'plugins'.DS.$pluginName.DS.'vendors'.DS;
 			}
@@ -219,56 +219,56 @@ class OpenidComponent extends Object {
 				$pathToVendorsFolder = VENDORS;
 			}
 		}
-		
+
 		return $pathToVendorsFolder;
 	}
-	
+
 	private function getPluginName() {
 		$result = array();
-		if (preg_match('#'.DS.'plugins'.DS.'(.*)'.DS.'controllers#', __FILE__, $result)) { 
+		if (preg_match('#'.DS.'plugins'.DS.'(.*)'.DS.'controllers#', __FILE__, $result)) {
 			return $result[1];
 		}
-		
+
 		return false;
 	}
-	
+
 	private function getQuery() {
 		$query = Auth_OpenID::getQuery();
-		
-		// unset the url parameter automatically added by app/webroot/.htaccess 
+
+		// unset the url parameter automatically added by app/webroot/.htaccess
 		// as it causes problems with the verification of the return_to url
     	unset($query['url']);
-    	
+
     	return $query;
 	}
-	
+
 	private function getStore() {
 		$store = null;
-		
-		if ($this->useDatabase) { 
+
+		if ($this->useDatabase) {
 			$store = $this->getMySQLStore();
-		} else {	
+		} else {
 			$store = $this->getFileStore();
 		}
-		
+
 		return $store;
 	}
-	
+
 	private function importCoreFilesFromOpenIDLibrary() {
 		App::import('Vendor', $this->importPrefix.'consumer', array('file' => 'Auth'.DS.'OpenID'.DS.'Consumer.php'));
 		App::import('Vendor', $this->importPrefix.'sreg', array('file' => 'Auth'.DS.'OpenID'.DS.'SReg.php'));
 		App::import('Vendor', $this->importPrefix.'ax', array('file' => 'Auth'.DS.'OpenID'.DS.'AX.php'));
 		App::import('Vendor', $this->importPrefix.'google', array('file' => 'Auth'.DS.'OpenID'.DS.'google_discovery.php'));
 	}
-	
+
 	private function isEmail($string) {
 		return strpos($string, '@');
 	}
-	
+
 	private function isPathWithinPlugin($path) {
 		return strpos($path, DS.'plugins'.DS) ? true : false;
 	}
-	
+
 	private function redirect($request, $returnTo, $realm) {
 		$redirectUrl = $request->redirectUrl($realm, $returnTo);
 
@@ -278,7 +278,7 @@ class OpenidComponent extends Object {
 
 		$this->controller->redirect($redirectUrl);
 	}
-	
+
 	private function showFormWithAutoSubmit($request, $returnTo, $realm) {
 		$formId = 'openid_message';
 		$formHtml = $request->formMarkup($realm, $returnTo, false , array('id' => $formId));
@@ -292,12 +292,14 @@ class OpenidComponent extends Object {
 			 $formHtml.'</body></html>';
 		exit;
 	}
-	
+
 	private function transformEmailToOpenID($email) {
 		if (App::import('Vendor', $this->importPrefix.'emailtoid', array('file' => 'Auth'.DS.'Yadis'.DS.'Email.php'))) {
 			return Auth_Yadis_Email_getID($email);
 		}
-		
+
 		throw new InvalidArgumentException('Invalid OpenID');
 	}
 }
+
+?>

@@ -15,7 +15,7 @@ if (!empty($item['Item']['image'])) {
 echo $html->tag('h3', $click);
 $user = $item['User']['nickname'];
 if (empty($user)) {
-    $user = $item['User']['fullname'];
+    $user = $item['User']['first_name'] . ' ' . $item['User']['last_name'];
  }
 echo $html->div('seller', 'Seller: ' .$ajax->link($user,
         array('controller' => 'users',

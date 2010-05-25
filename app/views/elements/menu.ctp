@@ -51,6 +51,10 @@ $myItems = $html->tag('li',
                array('controller' => 'users', 'action' => 'items'),
                array('update' => 'content')));
 
+$myItems = $html->tag('li', $html->tag('span', 'My Items »') .
+           $html->tag('ul', $html->tag('li', $addItem) .
+               $html->tag('li', $myItems)));
+
 $categories = $html->tag('li',
               $ajax->link('Categories',
                   array('controller' => 'categories',
@@ -63,9 +67,9 @@ $tags = $html->tag('li',
                 'action' => 'index'),
             array('update' => 'content')));
 
-$moderatorMenu = 'Moderator';
+$moderatorMenu = $html->tag('span', 'Moderator »');
 
-$adminMenu = 'Administrator';
+$adminMenu = $html->tag('span', 'Administrator »');
 
 $categoriesEdit = $html->tag('li',
                   $ajax->link('Categories',
@@ -78,6 +82,12 @@ $users = $html->tag('li',
              array('controller' => 'users',
                  'action' => 'index'),
              array('update' => 'content')));
+
+$usersEdit = $html->tag('li',
+             $ajax->link('Users',
+                 array('controller' => 'users',
+                     'action' => 'edit'),
+                 array('update' => 'content')));
 
 $logout = $html->tag('li',
           $html->link('Logout',
@@ -98,7 +108,6 @@ $search = $form->create('Search', array('controller' => 'items', 'action' => 'in
 $adminItems = '';
 $menuItems = $home . $browse . $categories . $tags;
 if ($loggedIn) {
-    $menuItems .= $addItem;
     $menuItems .= $myItems;
  }
 if ($admin) {
@@ -110,7 +119,7 @@ if ($moderator) {
     $adminItems .= $categoriesEdit;
  }
 if ($admin) {
-    $adminItems .= $users;
+    $adminItems .= $usersEdit;
  }
 if (isset($subMenu)) {
     $menuItems .= $html->tag('li',
@@ -125,6 +134,7 @@ if ($loggedIn) {
 
 $menuItems .= $search;
 
-echo $html->tag('ul', $menuItems);
+echo $html->div(null, $html->tag('ul', $menuItems), array('id' => 'cssm1'));
+
 echo '<fb:like href="http://94.254.42.77/BuyAndSellOnline/" layout="button_count"></fb:like>';
 ?>

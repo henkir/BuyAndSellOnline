@@ -4,11 +4,14 @@ class User extends AppModel {
     /**
      * A User has many Items and Purchases.
      */
-    var $hasMany = array('Item', 'Purchase');
+    var $hasMany = array('Item' => array(
+                       'className' => 'Item',
+                       'dependent' => true),
+                   'Purchase');
     /**
      * A User belongs to a Group.
      */
-    var $belongsTo = array('Group');
+    var $belongsTo = array('Group', 'Country');
     /**
      * A user acts as a requester.
      */
@@ -40,8 +43,8 @@ class User extends AppModel {
                         'nickRule2' => array('rule' => 'alphaNumeric',
                                      'last' => true,
                                      'message' => 'Nickname must be alpha-numeric.'),
-                    'nickRule3' => array('rule' => 'isUnique',
-                                 'message' => 'Nickname already exists.')));
+                        'nickRule3' => array('rule' => 'isUnique',
+                                     'message' => 'Nickname already exists.')));
 
     /**
      * Gets the parent node of the user.
@@ -64,7 +67,7 @@ class User extends AppModel {
     }
 
     function afterSave($created) {
-	// Updates AROs table so it is correct.
+        // Updates AROs table so it is correct.
         if (!$created) {
             $parent = $this->parentNode();
             $parent = $this->node($parent);
@@ -75,5 +78,5 @@ class User extends AppModel {
         }
     }
 
-}
+  }
 ?>

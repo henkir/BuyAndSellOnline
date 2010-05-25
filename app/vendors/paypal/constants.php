@@ -29,7 +29,7 @@ else
     define('API_SIGNATURE', 'live_signature');
     define('API_ENDPOINT', 'https://api-3t.paypal.com/nvp');
     define('PAYPAL_URL', 'https://www.paypal.com/webscr&cmd=_express-checkout&token=');
-} 
+}
 
 
 /**
@@ -66,4 +66,3 @@ define('PROXY_PORT', '808');
 define('VERSION', '3.0');
 
 ?>
-

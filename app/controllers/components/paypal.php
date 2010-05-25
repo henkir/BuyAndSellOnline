@@ -1,10 +1,10 @@
-<?php 
+<?php
 /**
  * Paypal Direct Payment API Component class file.
  */
 App::import('Vendor','paypal' ,array('file'=>'paypal/Paypal.php'));
 class PaypalComponent extends Object{
-	
+
 	function processPayment($paymentInfo,$function){
 		$paypal = new Paypal();
 		if ($function=="DoDirectPayment")
@@ -20,4 +20,3 @@ class PaypalComponent extends Object{
 	}
 }
 ?>
-
