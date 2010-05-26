@@ -10,7 +10,10 @@ class PurchasesController extends AppController {
      * Gets all Purchases.
      */
     function index() {
-        $this->set('purchases', $this->Purchase->find('all'));
+        $this->paginate = array('limit' => 20,
+                          'conditions' => array('Purchase.user_id = ' =>
+                                        $this->Session->read('Auth.User.id')));
+        $this->set('data', $this->paginate('Purchase'));
     }
 
     /**
@@ -21,6 +24,22 @@ class PurchasesController extends AppController {
     function view($id = null) {
         $this->Purchase->id = $id;
         $this->set('purchase', $this->Purchase->read());
+    }
+
+    function confirm($id) {
+        if (!empty($id)) {
+            $this->Purchase->id = $id;
+            $purchase = $this->Purchase->read();
+            if ($purchase['Purchase']['user_id']
+                == $this->Session->read('Auth.User.id')) {
+                if (!$purchase['Purchase']['confirmed']) {
+                    $this->Purchase->saveField('confirmed', true);
+                    $this->Session->setFlash('Successfully confirmed purchase.',
+                        'default', array('class' => 'success'));
+                    $this->redirect(array('action' => 'index'));
+                }
+            }
+        }
     }
 
     /**

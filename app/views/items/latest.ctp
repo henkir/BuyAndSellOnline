@@ -4,13 +4,14 @@
    * Prints the latest Items very shortly.
    */
 
-echo $html->tag('h4', 'Latest');
-
+$out = '';
 foreach ($items as $item) {
 
     $this->set('item', $item);
-    echo $this->element('item_latest');
+    $out .= $this->element('item_latest');
 
   }
+
+echo $html->div(null, $html->tag('h4', 'Latest') . $out);
 
 ?>

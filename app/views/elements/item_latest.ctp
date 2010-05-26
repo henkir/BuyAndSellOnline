@@ -16,7 +16,7 @@ $description = '';
 if (!empty($item['Item']['image'])) {
     $image = $ajax->link($html->image('/img/uploads/' .
                  $item['Item']['image'],
-                 array('class' => 'item_small_img')),
+                 array('class' => 'latest_img')),
              array('controller' => 'items',
                  'action' => 'view',
                  $item['Item']['id']),
@@ -30,7 +30,7 @@ if (!empty($item['Item']['image'])) {
     }
  }
 
-echo $html->div(null, $title . $description . $image,
+echo $html->div('item_latest', $title . $description . $image,
     array('id' => 'item_latest' . $item['Item']['id'], 'style' => 'float:left'));
 if ((strtotime(date('Y-m-d H:i:s')) - strtotime($item['Item']['created'])) < 9) {
     echo $javascript->codeBlock("new Effect.Highlight('item_latest" .

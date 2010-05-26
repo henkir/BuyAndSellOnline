@@ -31,12 +31,15 @@ window.fbAsyncInit = function() {
 
     echo $html->para(null, 'You can login using your Facebook account, your OpenID account or the traditional way.');
 
-    echo '<fb:login-button perms="email,user_about_me"></fb:login-button>';
+    echo $html->para('form', 'Login using ' .
+        $html->link('Facebook', 'http://www.facebook.com/', array('target' => 'blank')) .
+        ' <fb:login-button perms="email,user_about_me"></fb:login-button>');
 
     // Create OpenID form components
     $oForm = $form->create('User',
              array('type' => 'post', 'action' => 'login',
-                 'id' => 'UserLoginFormOpenid'));
+                 'id' => 'UserLoginFormOpenid',
+                 'class' => 'form'));
     $oOpenid = $form->input('OpenidUrl.openid',
                array('label' => false,
 			    'div' => false,
@@ -52,7 +55,7 @@ window.fbAsyncInit = function() {
     // Create traditional login components
     $lForm = $form->create('User', array('type' => 'post',
 					 'action' => 'login',
-					 'class' => 'login'));
+					 'class' => 'login form'));
     $lUsername = $form->input('username',
 			      array('label' => 'Username:'));
     $lPassword = $form->input('password',
@@ -62,24 +65,23 @@ window.fbAsyncInit = function() {
 			  $form->submit('Login',
                   array('div' => false, 'id' => 'UserLoginSubmit')));
     $lAuthenticating = $javascript->event('UserLoginForm',
-				 'submit',
-					  "Form.Element.setValue('UserLoginSubmit','Authenticating...');Form.Element.disable('UserLoginSubmit');");
+                       'submit',
+                       "Form.Element.setValue('UserLoginSubmit','Authenticating...');Form.Element.disable('UserLoginSubmit');");
     $lEnd = $form->end();
 
-    echo $oForm . $oOpenid . $oSubmit . $oAuthenticating . $oFocus . $oEnd;
-    echo $html->para(null,
+    echo $oForm . $oOpenid . $oSubmit . $oAuthenticating . $oFocus . $oEnd .
+        $html->para(null,
 		    'Don\'t have an <a href="http://openid.net/" target="_blank">OpenID</a>? Get one at <a href="http://www.myid.net/" target="_blank">myID.net</a>.');
     echo $html->para(null,
-		     'Or, if you want to login in a traditional way.');
-    echo $lForm . $lUsername . $lPassword . $lSubmit . $lAuthenticating . $lEnd;
-
-    echo $html->para(null,
-        "Don't have an account? " .
-        $ajax->link('Register',
-            array('controller' => 'users',
-                'action' => 'register'),
-            array('update' => 'content')) .
-        ' free.');
+            'Or, if you want to login in a traditional way.') .
+        $lForm . $lUsername . $lPassword . $lSubmit . $lAuthenticating . $lEnd .
+        $html->para(null,
+            "Don't have an account? " .
+            $ajax->link('Register',
+                array('controller' => 'users',
+                    'action' => 'register'),
+                array('update' => 'content')) .
+            ' free.');
  }
 
 ?>

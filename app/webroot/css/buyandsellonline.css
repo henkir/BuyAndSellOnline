@@ -1,3 +1,7 @@
+#container {
+    background: #ddddff;
+    padding: 0 2em 1em 1em;
+}
 
 a {
     text-decoration: none;
@@ -35,12 +39,22 @@ ul {
 }
 
 #items {
-    background: #ffffff;
+
+}
+
+.latest_img {
+    width: 5em;
+}
+
+.form {
+    border: solid #bbbbff;
+    border-width: 1px 2px 2px 1px;
+    padding: 0.5em;
 }
 
 .item {
-    background: #dddddd;
-    padding: 0.5em;
+    background: #ccccff;
+    padding: 0.5em 0.5em 1em 0.5em;
     margin: 0.5em 0 0.5em 0;
 }
 
@@ -55,6 +69,19 @@ ul {
 
 .item div {
     font-style: italic;
+}
+
+.latest {
+    border: solid #bbbbff;
+    border-width: 1px 1px 1px 1px;
+}
+
+.item_latest {
+    border: solid #bbbbff;
+    border-width: 0 0 1px 0;
+    padding: 0.25em;
+    width: 100%;
+    word-wrap: break-word;
 }
 
 .item_small_img {
@@ -128,7 +155,7 @@ div.spinner {
 
 #cssm1 a {
     display: block;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #ddddff;
     background: #abc;
     text-decoration: none;
     padding: 0.25em 0.5em;
@@ -140,7 +167,7 @@ div.spinner {
 
 #cssm1 span {
     display: block;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #ddddff;
     background: #abc;
     text-decoration: none;
     padding: 0.25em 0.5em;

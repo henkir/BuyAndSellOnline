@@ -55,6 +55,11 @@ $myItems = $html->tag('li', $html->tag('span', 'My Items »') .
            $html->tag('ul', $html->tag('li', $addItem) .
                $html->tag('li', $myItems)));
 
+$myPurchases = $html->tag('li',
+               $ajax->link('My Purchases',
+                   array('controller' => 'purchases', 'action' => 'index'),
+                   array('update' => 'content')));
+
 $categories = $html->tag('li',
               $ajax->link('Categories',
                   array('controller' => 'categories',
@@ -109,6 +114,7 @@ $adminItems = '';
 $menuItems = $home . $browse . $categories . $tags;
 if ($loggedIn) {
     $menuItems .= $myItems;
+    $menuItems .= $myPurchases;
  }
 if ($admin) {
     $subMenu = $adminMenu;
