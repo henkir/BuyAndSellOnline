@@ -5,11 +5,11 @@
    * and one for logging in with a username and password.
    */
 
+echo $html->tag('h2', 'Login');
 if ($session->flash()) {
     echo $session->flash();
  }
 
-echo $html->tag('h2', 'Login');
 if ($loggedIn) {
     echo 'Already logged in.';
  } else {
@@ -72,16 +72,16 @@ window.fbAsyncInit = function() {
     echo $oForm . $oOpenid . $oSubmit . $oAuthenticating . $oFocus . $oEnd .
         $html->para(null,
 		    'Don\'t have an <a href="http://openid.net/" target="_blank">OpenID</a>? Get one at <a href="http://www.myid.net/" target="_blank">myID.net</a>.');
-    echo $html->para(null,
-            'Or, if you want to login in a traditional way.') .
-        $lForm . $lUsername . $lPassword . $lSubmit . $lAuthenticating . $lEnd .
-        $html->para(null,
-            "Don't have an account? " .
-            $ajax->link('Register',
-                array('controller' => 'users',
-                    'action' => 'register'),
-                array('update' => 'content')) .
-            ' free.');
+    echo $html->div(null,
+        'Or, if you want to login in a traditional way.') .
+        $html->div(null, $lForm . $lUsername . $lPassword . $lSubmit . $lAuthenticating . $lEnd .
+            $html->para(null,
+                "Don't have an account? " .
+                $ajax->link('Register',
+                    array('controller' => 'users',
+                        'action' => 'register'),
+                    array('update' => 'content')) .
+                ' free.'));
  }
 
 ?>

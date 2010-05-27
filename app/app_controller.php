@@ -23,7 +23,7 @@ class AppController extends Controller {
 
     function beforeFilter() {
         parent::beforeFilter();
-        //Configure::write('debug', 0);
+        Configure::write('debug', 1);
         $this->_configure();
         $this->_checkAjax();
         $this->_setUpAuth();

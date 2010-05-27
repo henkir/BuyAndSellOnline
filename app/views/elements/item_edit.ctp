@@ -60,7 +60,7 @@ var valid = new Validation('ItemEditForm', { immediate:true });") .
 
     // Print form components
     echo $iForm . $iId . $iName . $iCategory . $iPrice . $iPaypal . $iImage .
-        $iDescription . $iTag . $iAgreed . $iSetFocus . $iSubmit;
+        $iDescription . /*$iTag .*/ $iAgreed . $iSetFocus . $iSubmit;
 
  } else {
     echo 'bla';

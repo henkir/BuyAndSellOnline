@@ -55,6 +55,6 @@ $iSubmit = $html->div(null, $form->label(null, '') .
 
 // Print form components
 echo $iForm . $iName . $iCategory . $iPrice . $iPaypal . $iImage . $iDescription .
-$iTag . $iAgreed . $iSetFocus . $iSubmit;
+/*$iTag .*/ $iAgreed . $iSetFocus . $iSubmit;
 
 ?>

@@ -98,7 +98,16 @@ $footer = $html->div('span-24 last',
 // Create div for facebook, required for script to work.
 $facebookDiv = $html->div(null, '', array('id' => 'fb-root'));
 // Create javascript for loading facebook framework.
-$facebookJS = $javascript->codeBlock("
+$facebookJS = $javascript->link('http://connect.facebook.net/en_US/all.js');
+$facebookJS .= $javascript->codeBlock("FB.init({appId: '120588011307924', status: true, cookie: true, xfbml: true});
+  FB.Event.subscribe('auth.sessionChange', function(response) {
+    if (response.session) {
+      // A user has logged in, and a new cookie has been saved
+    } else {
+      // The user has logged out, and the cookie has been cleared
+    }
+  });");
+$facebookJS .= $javascript->codeBlock("
 window.fbAsyncInit = function() {
         FB.init({appId: '120588011307924', status: true, cookie: true,
                  xfbml: true});
@@ -112,7 +121,8 @@ window.fbAsyncInit = function() {
         document.getElementById('fb-root').appendChild(e);
       }());
 FB.Event.subscribe('auth.login', function(response) {
-        window.location.reload();
+        window.location = '" .
+               $html->url(array('controller' => 'users', 'action' => 'login')) . "';
       });") . $javascript->blockEnd();
 
 // Create the container div.

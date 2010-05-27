@@ -108,7 +108,7 @@ $search = $form->create('Search', array('controller' => 'items', 'action' => 'in
     $form->end();
 
 $adminItems = '';
-$menuItems = $home . $browse . $categories . $tags;
+$menuItems = $home . $browse . $categories /*. $tags*/;
 if ($loggedIn) {
     $menuItems .= $myItems;
     $menuItems .= $myPurchases;
