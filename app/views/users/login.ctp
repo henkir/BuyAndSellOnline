@@ -43,7 +43,7 @@ window.fbAsyncInit = function() {
     $oOpenid = $form->input('OpenidUrl.openid',
                array('label' => false,
 			    'div' => false,
-			    'class' => 'loginTextbox'));
+			    'class' => 'openidLogin'));
     $oSubmit = $form->submit('Login',
                array('div' => false, 'id' => 'UserLoginSubmitOpenid'));
     $oAuthenticating = $javascript->event('UserLoginFormOpenid',

@@ -20,10 +20,16 @@ if (isset($item)) {
              array('enctype' => 'multipart/form-data', 'class' => 'addItem',
                  'action' => 'edit'));
     $iId = $form->input('id', array('type' => 'hidden'));
-    $iName = $form->input('name', array('label' => 'Title:'));
-    $iCategory = $form->input('category_id', array('label' => 'Category:'));
-    $iPrice = $form->input('price', array('label' => 'Price:'));
-    $iPaypal = $form->input('paypal', array('label' => 'Paypal account:'));
+    $iName = $form->input('name', array('label' => 'Title:',
+             'class' => 'required validate-alphanum'));
+    $iCategory = $form->input('categories', array('label' => 'Category:',
+                     'empty' => '(choose one)',
+                     'default' => $item['Item']['category_id'],
+                     'class' => 'required validate-select'));
+    $iPrice = $form->input('price', array('label' => 'Price:',
+              'class' => 'required validate-currency-dollar'));
+    $iPaypal = $form->input('paypal', array('label' => 'Paypal account:',
+               'class' => 'required validate-email'));
     $iImage = $form->input('file',
               array('type' => 'file',
                   'label' => array('style' => 'font-weight:normal',
@@ -31,7 +37,8 @@ if (isset($item)) {
                   'name' => 'file'));
     $iDescription = $form->input('description',
                     array('label' => array('style' => 'vertical-align:top',
-                                   'text' => 'Description:')));
+                                   'text' => 'Description:'),
+                    'class' => 'required'));
     $iTag = $form->input('Tag',
             array('label' =>
                 array('style' => 'vertical-align:top;font-weight:normal',
@@ -42,9 +49,11 @@ if (isset($item)) {
                        array('controller' => 'items',
                            'action' => 'terms'),
                        array('target' => '_blank')) .
-                   ':'));
+                   ':',
+               'class' => 'required'));
     // Set focus to name textbox
-    $iSetFocus = $javascript->codeBlock("Form.Element.focus('ItemName')") .
+    $iSetFocus = $javascript->codeBlock("Form.Element.focus('ItemName');
+var valid = new Validation('ItemEditForm', { immediate:true });") .
         $javascript->blockEnd();
     $iSubmit = $html->div(null, $form->label(null, '') .
                $form->end('Save Item'));

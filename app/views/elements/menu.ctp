@@ -13,43 +13,31 @@ $updateMenu = 'new Ajax.Updater("menu","' . $relativeUrl .
     '/layouts/menu",{method:"get",evalScripts:true});';
 
 
-echo $javascript->codeBlock("
-window.fbAsyncInit = function() {
-        FB.init({appId: '120588011307924', status: true, cookie: true,
-                 xfbml: true});
-      };
-      (function() {
-        var e = document.createElement('script');
-        e.type = 'text/javascript';
-        e.src = document.location.protocol +
-          '//connect.facebook.net/en_US/all.js';
-        e.async = true;
-        document.getElementById('fb-root').appendChild(e);
-      }());
-FB.Event.subscribe('auth.login', function(response) {
-        window.location.reload();
-      });");
-echo $javascript->blockEnd();
+
 
 $home = $html->tag('li',
         $ajax->link('Home',
             '/',
-            array('update' => 'content')));
+            array('update' => 'content',
+                'indicator' => 'spinner')));
 
 $browse = $html->tag('li',
           $ajax->link('Browse',
               array('controller' => 'items', 'action' => 'index'),
-              array('update' => 'content')));
+              array('update' => 'content',
+                  'indicator' => 'spinner')));
 
 $addItem = $html->tag('li',
            $ajax->link('Add Item',
                array('controller' => 'items', 'action' => 'add'),
-               array('update' => 'content')));
+               array('update' => 'content',
+                   'indicator' => 'spinner')));
 
 $myItems = $html->tag('li',
            $ajax->link('My Items',
                array('controller' => 'users', 'action' => 'items'),
-               array('update' => 'content')));
+               array('update' => 'content',
+                   'indicator' => 'spinner')));
 
 $myItems = $html->tag('li', $html->tag('span', 'My Items »') .
            $html->tag('ul', $html->tag('li', $addItem) .
@@ -58,19 +46,22 @@ $myItems = $html->tag('li', $html->tag('span', 'My Items »') .
 $myPurchases = $html->tag('li',
                $ajax->link('My Purchases',
                    array('controller' => 'purchases', 'action' => 'index'),
-                   array('update' => 'content')));
+                   array('update' => 'content',
+                       'indicator' => 'spinner')));
 
 $categories = $html->tag('li',
               $ajax->link('Categories',
                   array('controller' => 'categories',
                       'action' => 'index'),
-                  array('update' => 'content')));
+                  array('update' => 'content',
+                      'indicator' => 'spinner')));
 
 $tags = $html->tag('li',
         $ajax->link('Tags',
             array('controller' => 'tags',
                 'action' => 'index'),
-            array('update' => 'content')));
+            array('update' => 'content',
+                'indicator' => 'spinner')));
 
 $moderatorMenu = $html->tag('span', 'Moderator »');
 
@@ -80,19 +71,22 @@ $categoriesEdit = $html->tag('li',
                   $ajax->link('Categories',
                       array('controller' => 'categories',
                           'action' => 'edit'),
-                      array('update' => 'content')));
+                      array('update' => 'content',
+                          'indicator' => 'spinner')));
 
 $users = $html->tag('li',
          $ajax->link('Users',
              array('controller' => 'users',
                  'action' => 'index'),
-             array('update' => 'content')));
+             array('update' => 'content',
+                 'indicator' => 'spinner')));
 
 $usersEdit = $html->tag('li',
              $ajax->link('Users',
                  array('controller' => 'users',
                      'action' => 'edit'),
-                 array('update' => 'content')));
+                 array('update' => 'content',
+                     'indicator' => 'spinner')));
 
 $logout = $html->tag('li',
           $html->link('Logout',
@@ -101,14 +95,17 @@ $logout = $html->tag('li',
 $login = $html->tag('li',
          $ajax->link('Login',
              array('controller' => 'users', 'action' => 'login'),
-             array('update' => 'content')));
+             array('update' => 'content',
+                 'indicator' => 'spinner')));
 
 $search = $form->create('Search', array('controller' => 'items', 'action' => 'index')) .
     $form->input('keyword', array('label' => false)) .
     $ajax->submit('Search', array('url' => array('controller' => 'items',
                                          'action' => 'index'),
             'update' => 'content',
-            'complete' => "Form.Element.setValue('SearchKeyword', '')")) . $form->end();
+            'indicator' => 'spinner',
+            'complete' => "Form.Element.setValue('SearchKeyword', '')")) .
+    $form->end();
 
 $adminItems = '';
 $menuItems = $home . $browse . $categories . $tags;
@@ -138,9 +135,9 @@ if ($loggedIn) {
     $menuItems .= $login;
  }
 
-$menuItems .= $search;
+//$menuItems .= $search;
 
-echo $html->div(null, $html->tag('ul', $menuItems), array('id' => 'cssm1'));
+echo $html->div(null, $html->tag('ul', $menuItems) . $search, array('id' => 'menu'));
 
-echo '<fb:like href="http://94.254.42.77/BuyAndSellOnline/" layout="button_count"></fb:like>';
+
 ?>

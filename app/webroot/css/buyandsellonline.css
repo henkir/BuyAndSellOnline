@@ -1,8 +1,4 @@
-#container {
-    background: #ddddff;
-    padding: 0 2em 1em 1em;
-}
-
+/* Tags */
 a {
     text-decoration: none;
 }
@@ -11,72 +7,81 @@ a:hover {
     text-decoration: underline;
 }
 
-#banner {
-    text-align: center;
-}
-
 ul {
     list-style-type: none;
 }
 
-#menu ul input {
-    font-size: 90%;
-    width: 9.5em;
+input[type="submit"],input[type="button"] {
+    background: #bbbbff;
 }
 
-.loginTextbox {
+input[type="submit"]:hover,input[type="button"]:hover {
+    background: #9999ff;
+    cursor: pointer;
+}
+
+/* Banner needs to be adjusted due to spinner */
+#banner {
+    float: left;
+    margin: 0 0 0 40px;
+    text-align: center;
+}
+
+/* Footer text should be centered */
+#footer {
+    text-align: center;
+}
+
+/* Set background and some padding */
+.container {
+    background: #ddddff;
+    padding: 0 2em 1em 1em;
+}
+
+/* Use a fancy image for openid textbox and make it longer */
+.openidLogin {
     background: url('../img/openid.gif') no-repeat;
     padding-left: 18px;
     width: 15em;
 }
 
-#news div {
-    margin-bottom: 1em;
-}
-
-#news div h5 {
-    margin: 0;
-}
-
-#items {
-
-}
-
-.latest_img {
+/* Limit the width of latest images */
+.latestImg {
     width: 5em;
 }
 
+/* Surround forms with a "3D" border */
 .form {
     border: solid #bbbbff;
     border-width: 1px 2px 2px 1px;
     padding: 0.5em;
 }
 
+/* Items should have some darker color and some spacing */
 .item {
     background: #ccccff;
     padding: 0.5em 0.5em 1em 0.5em;
     margin: 0.5em 0 0.5em 0;
 }
 
+/* Don't want a lot of extra space around item title */
 .item h4 {
     margin: 0;
 }
 
+/* Set item description color and decrease margin */
 .item p {
     color: #000022;
     margin: 0;
 }
 
+/* Dates, seller etc should be italic */
 .item div {
     font-style: italic;
 }
 
-.latest {
-    border: solid #bbbbff;
-    border-width: 1px 1px 1px 1px;
-}
-
-.item_latest {
+/* Add a line below each latest item, word-wrap description */
+.itemLatest {
     border: solid #bbbbff;
     border-width: 0 0 1px 0;
     padding: 0.25em;
@@ -84,28 +89,30 @@ ul {
     word-wrap: break-word;
 }
 
-.item_small_img {
+/* Limit height of preview images */
+.itemSmallImg {
     float: left;
     margin: 0 0.5em 0 0.5em;
     height: 5em;
 }
 
-.item_img {
+/* Show full image, TODO: some images shouldn't be scaled too much */
+.itemImg {
     width: 100%;
 }
 
+/* Center paginator links and text */
 .paginator {
     text-align: center;
 }
 
+/* Put the spinner in the top right corner */
 div.spinner {
     float: right;
+    margin: 20px 0 0 -40px;
 }
 
-.sort {
-    height: 2.5em;
-}
-
+/* Make sure all labels in the forms are the same width, better looking */
 .addItem div label,.register div label {
     float: left;
     margin-right: 1em;
@@ -114,7 +121,7 @@ div.spinner {
     width: 12em;
 }
 
-
+/* Fix width of username/password labels */
 .login div label {
     float: left;
     margin-right: 1em;
@@ -123,81 +130,99 @@ div.spinner {
     width: 8em;
 }
 
-
+/* Add some space under checkboxes */
 .checkbox {
     margin-bottom: 1em;
 }
 
+/* When a field is required, make it bold */
 .required label {
     font-weight: bold;
 }
 
-.editList {
-    list-style-type: none;
-}
-
+/* Add some space to the edit buttons */
 .editList li span {
     display: block;
     float: left;
     width: 150px;
 }
 
-/* MENU */
+.categories li {
+    background: #bbbbff;
+    border-bottom: 2px solid #ddddff;
+    line-height: 1.5em;
+    padding: 0.25em 1em;
+}
 
-#cssm1 *  { padding:0; margin: 0; }
+/* Add some space around search form */
+#menuContainer form {
+    margin: 1em 0 1em 0;
+}
 
-#cssm1 {
+/* Shrink the textbox and button */
+#menuContainer form input {
+    font-size: 90%;
+    width: 9.5em;
+}
+
+/* Menu */
+
+#menu *  { padding:0; margin: 0; }
+
+#menu {
     z-index: 99;
     float: left;
     margin:0;
     line-height: 1.5em;
 }
 
-#cssm1 a {
+#menu a {
     display: block;
     border-bottom: 2px solid #ddddff;
-    background: #abc;
+    background: #bbbbff;
     text-decoration: none;
     padding: 0.25em 0.5em;
 }
 
-#cssm1 a:hover {
-    background: #789;
+#menu a:hover {
+    background: #9999ff;
 }
 
-#cssm1 span {
+#menu span {
     display: block;
     border-bottom: 2px solid #ddddff;
-    background: #abc;
+    background: #bbbbff;
     text-decoration: none;
     padding: 0.25em 0.5em;
 }
 
 
-#cssm1 ul li, #cssm1 ul li ul li  {
+#menu ul li, #menu ul li ul li  {
     width: 9em;
 }
 
-#cssm1 ul{
+#menu ul{
+    cursor: pointer;
     display:block;
     list-style-type:none;
     width: 9em;
 }
 
-#cssm1 ul li ul, #cssm1:hover ul li ul, #cssm1:hover ul li:hover ul li ul {
+#menu ul li ul, #menu:hover ul li ul, #menu:hover ul li:hover ul li ul {
     display:none;
 }
 
-#cssm1:hover ul, #cssm1:hover ul li:hover ul, #cssm1:hover ul li:hover ul li:hover ul {
+#menu:hover ul, #menu:hover ul li:hover ul, #menu:hover ul li:hover ul li:hover ul {
+    cursor: default;
     display:block;
 }
 
-#cssm1:hover ul li:hover ul, #cssm1:hover ul li:hover ul li:hover ul {
+#menu:hover ul li:hover ul, #menu:hover ul li:hover ul li:hover ul {
     position: relative;
     left: 9em; top: 0em;
 }
 
-#cssm1 ul li ul, #cssm1 ul li ul li ul {
+#menu ul li ul, #cssm1 ul li ul li ul {
     clear: left;
     margin-top: -2.25em;
 }

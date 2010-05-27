@@ -5,9 +5,7 @@ echo $ajax->div('categories');
 // Print sort options
 echo $html->div('sort', 'Sort: '.
     $paginator->sort('Name', 'name').' '.
-    $paginator->sort('Created', 'created').
-    $html->div('spinner', $html->image('/img/loading.gif'),
-        array('id' => 'spinner', 'style' => 'display:none')));
+    $paginator->sort('Created', 'created'));
 
 $out = '';
 foreach ($data as $category) {
@@ -15,7 +13,7 @@ foreach ($data as $category) {
 		       $ajax->link($category['Category']['name'],
 				   array('action' => 'view',
 					 $category['Category']['id']),
-				   array('update' => 'content')));
+				   array('update' => 'content', 'indicator' => 'spinner')));
 }
 echo $html->tag('ul', $out, array('class' => 'categories'));
 

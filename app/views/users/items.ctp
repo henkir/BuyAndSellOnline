@@ -22,9 +22,7 @@ if (isset($data)) {
     echo $html->div('sort', 'Sort: '.
         $paginator->sort('Name', 'name').' '.
         $paginator->sort('Created', 'created').' '.
-        $paginator->sort('Price', 'price').
-        $html->div('spinner', $html->image('/img/loading.gif'),
-            array('id' => 'spinner', 'style' => 'display:none')));
+        $paginator->sort('Price', 'price'));
 
     foreach ($data as $item) {
         $this->set('item', $item);

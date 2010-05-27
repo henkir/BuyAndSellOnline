@@ -7,7 +7,7 @@ $click = $ajax->link($item['Item']['name'],
 if (!empty($item['Item']['image'])) {
     $imageClick = $ajax->link(
         $html->image('/img/uploads/' . $item['Item']['image'],
-            array('class' => 'item_img')),
+            array('class' => 'itemImg')),
         array('action' => 'index', $item['Item']['id']),
         array('update' => 'item' . $item['Item']['id']), null, false);
     echo $imageClick;
@@ -20,7 +20,7 @@ if (empty($user)) {
 echo $html->div('seller', 'Seller: ' .$ajax->link($user,
         array('controller' => 'users',
             'action' => 'items', $item['User']['id']),
-        array('update' => 'content')));
+        array('update' => 'content', 'indicator' => 'spinner')));
 $created = $time->format('Y-m-d H:i', $item['Item']['created']);
 $modified = '';
 if ($item['Item']['modified']) {
@@ -38,7 +38,7 @@ $category = $ajax->link($item['Category']['name'],
             array('controller' => 'categories',
                 'action' => 'view',
                 $item['Category']['id']),
-            array('update' => 'content'));
+            array('update' => 'content', 'indicator' => 'spinner'));
 
 echo $html->div(null, 'Created: ' . $created . $modified);
 echo $html->div(null, 'Category: ' . $category);
@@ -56,7 +56,7 @@ if ($loggedIn) {
     } else {
         echo $html->para(null, $ajax->link('Buy', array('controller' => 'items',
                     'action' => 'buy', $item['Item']['id']),
-                array('update' => 'content')));
+                array('update' => 'content', 'indicator' => 'spinner')));
     }
  }
 

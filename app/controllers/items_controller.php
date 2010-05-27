@@ -44,6 +44,13 @@ class ItemsController extends AppController {
      * @return the latest Items
      */
     function latest() {
+        $url = $this->params['url'];
+        if (isset($url['var1'])) {
+            $latest = $url['var1'];
+            $this->set('latest', $latest);
+        } else {
+            $this->set('latest', null);
+        }
         $items = $this->Item->find('all',
                  array('limit' => 6,
 					 'order' => 'Item.created DESC',
@@ -144,7 +151,7 @@ class ItemsController extends AppController {
         if ($id != null) {
             $this->data = $this->Item->read();
             $this->set('item', $this->Item->read());
-            $this->set('category_id', $this->Item->Category->find('list'));
+            $this->set('categories', $this->Item->Category->find('list'));
             $this->set('tags', $this->Item->Tag->find('list'));
             $this->set('selectedTags', $this->Item->Tag->find('list',
                     array('joins' => array(

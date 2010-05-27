@@ -22,7 +22,7 @@ if (strlen($item['Item']['description']) > $descriptionLength) {
 // If there is an image, create a link and print image.
 if (!empty($item['Item']['image'])) {
     $imageClick = $ajax->link($html->image('/img/uploads/'.$item['Item']['image'],
-                      array('class' => 'item_small_img')),
+                      array('class' => 'itemSmallImg')),
 			      array('controller' => 'items',
                       'action' => 'view', $item['Item']['id']),
 			      array('update' => 'item'.$item['Item']['id'],

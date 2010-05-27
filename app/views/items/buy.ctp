@@ -12,8 +12,6 @@ if (isset($confirm)) {
        echo $html->tag('h2', 'Bought');
        echo $html->para(null, 'The item has already been purchased.');
      } else {
-      echo $html->div('spinner', $html->image('/img/loading.gif'),
-          array('id' => 'spinner', 'style' => 'display:none'));
       echo $html->tag('h2', 'Buy ' . $item['Item']['name']);
       echo $form->create('User', array('class' => 'addItem',
               'url' => array('controller' => 'items',
@@ -36,7 +34,7 @@ if (isset($confirm)) {
                                              'action' => 'buy', $item['Item']['id'],
                                              true),
               'update' => 'content',
-              'before' => "Element.show('spinner')"));
+              'indicator' => 'spinner'));
       echo $form->end();
   }
 

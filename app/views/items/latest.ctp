@@ -8,6 +8,7 @@ $out = '';
 foreach ($items as $item) {
 
     $this->set('item', $item);
+    $this->set('latest', $latest);
     $out .= $this->element('item_latest');
 
   }

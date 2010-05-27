@@ -1,0 +1,41 @@
+input.disabled {
+	border: 1px solid #F2F2F2;
+	background-color: #F2F2F2;
+}
+
+input.required, textarea.required {
+	border: 1px solid #00A8E6;
+}
+input.validation-failed, textarea.validation-failed {
+	border: 1px solid #FF3300;
+	color : #FF3300;
+}
+input.validation-passed, textarea.validation-passed {
+	border: 1px solid #00CC00;
+	color : #000;
+}
+
+.validation-advice {
+	margin: 5px 0;
+	padding: 5px;
+	background: #FBE3E4;
+	border: 2px solid #FBC2C4;
+	color:#8a1f11;
+	font-weight: bold;
+	left: 13em;
+	position: relative;
+	width: 32em;
+}
+
+.custom-advice {
+	margin: 5px 0;
+	padding: 5px;
+	background-color: #C8AA00;
+	color : #FFF;
+	font-weight: bold;
+}
+
+.form-row {
+	clear: both;
+	padding: 0.5em;
+}
