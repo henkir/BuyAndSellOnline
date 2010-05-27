@@ -28,8 +28,6 @@ if (isset($data)) {
         $paginator->next('Next »').'<br />'.
         $paginator->counter().' ');
 
-    $relativeUrl = Configure::read('relativeUrl');
-
     echo $javascript->blockEnd();
     echo $ajax->divEnd('items');
  } elseif (isset($item)) {

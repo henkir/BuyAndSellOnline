@@ -23,7 +23,7 @@ class AppController extends Controller {
 
     function beforeFilter() {
         parent::beforeFilter();
-        Configure::write('debug', 1);
+        Configure::write('debug', 2);
         $this->_configure();
         $this->_checkAjax();
         $this->_setUpAuth();
@@ -35,7 +35,6 @@ class AppController extends Controller {
 
     function _configure() {
         // Set the relative URL from the web root directory. Empty if root.
-        Configure::write('relativeUrl', '/BuyAndSellOnline');
         // Set the IP of the server. Needed for OpenID.
         Configure::write('ip', '94.254.42.77');
         Configure::write('itemsPerPage', 8);

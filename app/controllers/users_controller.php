@@ -171,7 +171,7 @@ class UsersController extends AppController {
     function login() {
 
         $returnTo = 'http://' . Configure::read('ip') .
-            Configure::read('relativeUrl').'/users/login';
+            $http->url(array('controller' => 'users', 'action' => 'login'));
         $facebookCookie = $this->_facebook();
         $this->set('facebookCookie', $facebookCookie);
         if ($facebookCookie != null && !$this->Session->check('User.Auth.id')) {
@@ -200,7 +200,7 @@ class UsersController extends AppController {
                         $this->data['OpenidUrl']['openid'],
 						$returnTo,
 						'http://' . Configure::read('ip') .
-                        Configure::read('relativeUrl'),
+                        $html->url('/'),
                         array('sreg_required' =>
                             array('email', 'nickname', 'fullname')));
                 } catch (InvalidArgumentException $e) {

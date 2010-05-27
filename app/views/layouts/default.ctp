@@ -16,7 +16,6 @@ $this->set('loggedIn', false);
     $this->set('admin', false);
  }
 
-$relativeUrl = Configure::read('relativeUrl');
 $ip = Configure::read('ip');
 
 // Print the document type and initial html tag.
@@ -35,9 +34,9 @@ echo $html->meta(null, null, array('name' => 'description',
         'content' =>
         'BuyAndSellOnline allows you to sign in using OpenID or Facebook, buying and selling items.'));
 // Print location of favicon.
-echo '<link rel="shortcut icon" href="' . $relativeUrl . '/favicon.ico" type="image/x-icon" />';
+echo '<link rel="shortcut icon" href="' . $html->url('/') . '/favicon.ico" type="image/x-icon" />';
 // Print the RSS location.
-echo '<link rel="alternate" type="application/rss+xml" title="BuyAndSellOnline" href="http://' . $ip . $relativeUrl . '/items/index.rss" />';
+echo '<link rel="alternate" type="application/rss+xml" title="BuyAndSellOnline" href="' . $html->url(array('controller' => 'items')) . '/index.rss" />';
 // Print the CSS files to use.
 echo $html->css('/css/blueprint/screen.css', 'stylesheet', array('media' => 'screen, projection'));
 echo $html->css('/css/blueprint/print.css', 'stylesheet', array('media' => 'print'));

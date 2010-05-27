@@ -6,11 +6,10 @@
    *
    */
 
-$relativeUrl = Configure::read('relativeUrl');
-
 // Use this as complete callback function when the menu needs to be updated.
-$updateMenu = 'new Ajax.Updater("menu","' . $relativeUrl .
-    '/layouts/menu",{method:"get",evalScripts:true});';
+$updateMenu = 'new Ajax.Updater("menu","' .
+    $html->url(array('controller' => 'layouts', 'action' => 'menu')) .
+    '",{method:"get",evalScripts:true});';
 
 
 

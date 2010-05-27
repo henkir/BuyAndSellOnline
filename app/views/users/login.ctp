@@ -13,7 +13,8 @@ if ($session->flash()) {
 if ($loggedIn) {
     echo 'Already logged in.';
  } else {
-    echo '<meta property="og:image" content="http://' . Configure::read('ip') . Configure::read('relativeUrl') . '/img/banner_small.png"/>';
+    echo '<meta property="og:image" content="http://' . Configure::read('ip') .
+        $html->url('/') . '/img/banner_small.png"/>';
     echo $javascript->codeBlock("
 window.fbAsyncInit = function() {
         FB.init({appId: '120588011307924', status: true, cookie: true,
