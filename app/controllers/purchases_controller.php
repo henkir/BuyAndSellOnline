@@ -36,7 +36,7 @@ class PurchasesController extends AppController {
                     $this->Purchase->saveField('confirmed', true);
                     $this->Session->setFlash('Successfully confirmed purchase.',
                         'default', array('class' => 'success'));
-                    $this->redirect(array('action' => 'index'));
+                    $this->redirect(array('controller' => 'purchases', 'action' => 'index'));
                 }
             }
         }

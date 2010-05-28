@@ -13,13 +13,13 @@ if (!empty($item['Item']['image'])) {
     echo $imageClick;
  }
 echo $html->tag('h3', $click);
-$user = $item['User']['nickname'];
-if (empty($user)) {
-    $user = $item['User']['first_name'] . ' ' . $item['User']['last_name'];
+$username = $item['User']['nickname'];
+if (empty($username)) {
+    $username = $item['User']['first_name'] . ' ' . $item['User']['last_name'];
  }
-echo $html->div('seller', 'Seller: ' .$ajax->link($user,
+echo $html->div('seller', 'Seller: ' .$ajax->link($username,
         array('controller' => 'users',
-            'action' => 'items', $item['User']['id']),
+            'action' => 'viewitems', $item['User']['id']),
         array('update' => 'content', 'indicator' => 'spinner')));
 $created = $time->format('Y-m-d H:i', $item['Item']['created']);
 $modified = '';

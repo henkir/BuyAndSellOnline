@@ -147,7 +147,7 @@ div.spinner {
     width: 150px;
 }
 
-.categories li {
+.categories li,.purchases li {
     background: #bbbbff;
     border-bottom: 2px solid #ddddff;
     line-height: 1.5em;

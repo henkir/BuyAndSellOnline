@@ -28,7 +28,8 @@ if (isset($confirm)) {
       echo $form->input('city', array('label' => 'City:',
               'default' => $user['User']['city']));
       echo $form->input('countries', array('label' => 'Country:',
-              'default' => $user['User']['country_id']));
+              'default' => $user['User']['country_id'],
+              'empty' => '(choose one)'));
 
       echo $ajax->submit('Buy', array('url' => array('controller' => 'items',
                                              'action' => 'buy', $item['Item']['id'],

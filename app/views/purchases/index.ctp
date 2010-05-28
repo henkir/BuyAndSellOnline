@@ -1,6 +1,6 @@
 <?php
 
-echo $html->tag('My Purchases');
+echo $html->tag('h2', 'My Purchases');
 if ($session->flash()) {
     echo $session->flash();
  }
@@ -20,6 +20,6 @@ foreach ($data as $purchase) {
             $html->tag('span', $purchase['Item']['name']) . $confirm);
 }
 
-echo $html->tag('ul', $out, array('class' => 'editList'));
+echo $html->tag('ul', $out, array('class' => 'purchases editList'));
 
 ?>

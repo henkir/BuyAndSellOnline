@@ -9,7 +9,7 @@ echo $javascript->blockEnd();
 echo $form->end();
 
 echo $form->create('Clear', array('url' => array('controller' => 'items', 'action' => 'clear')));
-echo $ajax->submit('Clear filters', array('url' => array('controller' => 'items', 'action' => 'clear'), 'update' => 'content', 'indicator' => 'spinner'));
+echo $ajax->submit('Clear search', array('url' => array('controller' => 'items', 'action' => 'clear'), 'update' => 'content', 'indicator' => 'spinner'));
 echo $form->end();
 echo $ajax->divEnd('item_filter');
 

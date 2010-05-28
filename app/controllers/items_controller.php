@@ -137,7 +137,7 @@ class ItemsController extends AppController {
         if (!empty($this->data)) {
             $this->Item->id = $this->data['Item']['id'];
             $oldData = $this->Item->read();
-            if (_ownsItem($oldData['Item']['user_id'])) {
+            if ($this->_ownsItem($oldData['Item']['user_id'])) {
                 if ($this->FileUpload->success) {
                     $this->_deleteImage($oldData['Item']['image']);
                     $this->data['Item']['image'] = $this->FileUpload->finalFile;
@@ -161,7 +161,7 @@ class ItemsController extends AppController {
         if ($id != null) {
             $this->Item->id = $id;
             $this->data = $this->Item->read();
-            if (_ownsItem($this->data['Item']['user_id'])) {
+            if ($this->_ownsItem($this->data['Item']['user_id'])) {
                 $this->set('item', $this->Item->read());
                 $this->set('categories', $this->Item->Category->find('list'));
                 $this->set('tags', $this->Item->Tag->find('list'));
@@ -249,15 +249,15 @@ class ItemsController extends AppController {
     function delete($id) {
         $this->Item->id = $id;
         $item = $this->Item->read();
-        if (_ownsItem($item['Item']['user_id'])) {
-        if ($this->Item->delete($id)) {
-            $this->Session->setFlash('The item has been deleted.',
-                'default', array('class' => 'success'));
-        } else {
-            $this->Session->setFlash('Failed deleting the item.',
-                'default', array('class' => 'error'));
-        }
-        $this->redirect(array('action' => 'edit'));
+        if ($this->_ownsItem($item['Item']['user_id'])) {
+            if ($this->Item->delete($id)) {
+                $this->Session->setFlash('The item has been deleted.',
+                    'default', array('class' => 'success'));
+            } else {
+                $this->Session->setFlash('Failed deleting the item.',
+                    'default', array('class' => 'error'));
+            }
+            $this->redirect(array('controller' => 'items', 'action' => 'edit'));
         } else {
             $this->Session->setFlash('You are not allowed to do that.',
                 'default', array('class' => 'error'));
@@ -285,7 +285,8 @@ class ItemsController extends AppController {
                 $this->set('item', $this->Item->read());
                 $this->set('user',
                     $this->Item->User->findById($this->Session->read('Auth.User.id')));
-                $this->set('countries', $this->Item->User->Country->find('list'));
+                $this->set('countries',
+                    $this->Item->User->Country->find('list', array('order' => 'Country.name ASC')));
             } else {
                 $paymentInfo = array('Member'=>
                                array(
