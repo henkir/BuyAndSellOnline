@@ -1,6 +1,7 @@
 <?php
-$updateMenu = 'new Ajax.Updater("menu","' . Configure::read('relativeUrl') .
-    '/layouts/menu",{method:"get",evalScripts:true});';
+$updateMenu = 'new Ajax.Updater("menu","' .
+      $html->url(array('controller' => 'layouts', 'action' => 'menu')) .
+          '",{method:"get",evalScripts:true});';
 
 if ($session->flash()) {
     $session->flash();

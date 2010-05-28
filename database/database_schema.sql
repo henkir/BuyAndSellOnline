@@ -29,6 +29,7 @@ CREATE TABLE `users` (  `id` integer auto_increment,
                         `group_id` INT(1) DEFAULT 1,
 			`created` DATETIME,
 			`modified` DATETIME,
+			`banned` BOOLEAN DEFAULT FALSE,
                         PRIMARY KEY (`id`)
                         ) ENGINE=MyISAM;
 -- Create categories, that items can belong to.

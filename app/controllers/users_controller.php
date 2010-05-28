@@ -10,9 +10,25 @@ class UsersController extends AppController {
         $this->facebook = new Facebook(array(
                               'appId'  => '120588011307924',
                               'secret' => '06905be69e3290747a3e4c7c91ca1479',
-                              'cookie' => true,
+                              'cookie' => true
                           ));
-        $this->Auth->allowActions = array('index', 'view');
+        $this->Auth->allowedActions =
+            array('index', 'view', 'viewitems', 'login', 'logout', 'build_acl', 'initDB');
+    }
+
+    function _allowed($userId = null) {
+        if ($userId == null) {
+            return $this->Auth->user('group_id') >= 2;
+        } else {
+            $user = $this->User->read($userId);
+            if ($this->Auth->user('id') == $userId
+                || ($this->Auth->user('group_id') >= 2
+                    && $this->Auth->user('group_id') >= $user['User']['group_id'])) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
@@ -25,7 +41,7 @@ class UsersController extends AppController {
         $this->set('data', $data);
     }
 
-    function items($id = null) {
+    function viewitems($id = null) {
         $this->paginate = array('limit' => Configure::read('itemsPerPage'),
                           'order' => array('Item.created' => 'desc'),
                           'conditions' => array('Item.sold = ' => false));
@@ -53,7 +69,9 @@ class UsersController extends AppController {
      */
     function view($id = null) {
         $this->User->id = $id;
-        $this->set('user', $this->User->read());
+        $user = $this->User->read();
+        $this->set('user', $user);
+        return $user;
     }
 
     /**
@@ -62,32 +80,36 @@ class UsersController extends AppController {
      * @param id the id of the User
      */
     function edit($id = null) {
-        $paginate = array('limit' => Configure::read('usersPerPage'),
-                    'order' => array('User.created' => 'desc'),
-                    'conditions' =>
-                    array('User.group_id <= ' =>
-                        $this->Session->read('Auth.User.group_id')));
-        if (!empty($this->data)) {
-            $this->data['User']['group_id'] = $this->data['User']['groups'];
-            if ($this->User->save($this->data)) {
-                $this->Session->setFlash('The user has been saved.',
-                    'default', array('class' => 'success'));
-            } else {
-                $this->Session->setFlash('Failed saving the user.',
-                    'default', array('class' => 'error'));
-            }
+        if ($this->_allowed($id)) {
+            $paginate = array('limit' => Configure::read('usersPerPage'),
+                        'order' => array('User.created' => 'desc'),
+                        'conditions' =>
+                        array('User.group_id <= ' =>
+                            $this->Session->read('Auth.User.group_id')));
+            if (!empty($this->data)) {
+                $this->data['User']['group_id'] = $this->data['User']['groups'];
+                if ($this->User->save($this->data)) {
+                    $this->Session->setFlash('The user has been saved.',
+                        'default', array('class' => 'success'));
+                } else {
+                    $this->Session->setFlash('Failed saving the user.',
+                        'default', array('class' => 'error'));
+                }
 
-        }
-        if ($id == null) {
-            $this->set('data', $this->paginate());
+            }
+            if ($id == null) {
+                $this->set('data', $this->paginate());
+            } else {
+                $this->User->id = $id;
+                $this->set('groups', $this->User->Group->find('list',
+                        array('conditions' =>
+                            array('Group.id <= ' =>
+                                $this->Session->read('Auth.User.group_id')))));
+                $this->set('user', $this->User->read());
+                $this->set('users', $this->User->find('list'));
+            }
         } else {
-            $this->User->id = $id;
-            $this->set('groups', $this->User->Group->find('list',
-                    array('conditions' =>
-                        array('Group.id <= ' =>
-                            $this->Session->read('Auth.User.group_id')))));
-            $this->set('user', $this->User->read());
-            $this->set('users', $this->User->find('list'));
+            $this->redirect('/');
         }
     }
 
@@ -97,7 +119,7 @@ class UsersController extends AppController {
      * @param data the data of the User
      * @return the id of the new User
      */
-    function add($data) {
+    function _add($data) {
         $this->data['User'] = $data;
         $this->User->save($this->data);
         $this->Session->write('User.id', $this->User->getLastInsertID());
@@ -171,7 +193,7 @@ class UsersController extends AppController {
     function login() {
 
         $returnTo = 'http://' . Configure::read('ip') .
-            $http->url(array('controller' => 'users', 'action' => 'login'));
+            '/BuyAndSellOnline/users/login';
         $facebookCookie = $this->_facebook();
         $this->set('facebookCookie', $facebookCookie);
         if ($facebookCookie != null && !$this->Session->check('User.Auth.id')) {
@@ -200,7 +222,7 @@ class UsersController extends AppController {
                         $this->data['OpenidUrl']['openid'],
 						$returnTo,
 						'http://' . Configure::read('ip') .
-                        $html->url('/'),
+                        '/BuyAndSellOnline',
                         array('sreg_required' =>
                             array('email', 'nickname', 'fullname')));
                 } catch (InvalidArgumentException $e) {
@@ -247,7 +269,7 @@ class UsersController extends AppController {
             $id = $test['User']['id'];
         } else {
             // First time, add user.
-            $id = $this->add($data);
+            $id = $this->_add($data);
         }
         // Finally log in the user.
         $this->Auth->login($id);
@@ -279,6 +301,9 @@ class UsersController extends AppController {
      * Sets privileges for different groups, should be made private in production
      */
     function initDB() {
+        if (!Configure::read('debug')) {
+            return;
+        }
         $this->build_acl();
         $this->requestAction(
             array('controller' => 'groups', 'action' => 'initGroups'));
@@ -291,16 +316,69 @@ class UsersController extends AppController {
         $group->id = 2;
         $this->Acl->deny($group, 'controllers');
         $this->Acl->allow($group, 'controllers/Items');
-        $this->Acl->allow($group, 'controllers/Tags');
+        $this->Acl->allow($group, 'controllers/Countries');
         $this->Acl->allow($group, 'controllers/Categories');
-        $this->Acl->allow($group, 'controllers/Purchases');
-        $this->Acl->allow($group, 'controllers/Groups');
+        $this->Acl->allow($group, 'controllers/Purchases/index');
+        $this->Acl->allow($group, 'controllers/Purchases/view');
+        $this->Acl->allow($group, 'controllers/Purchases/confirm');
+        $this->Acl->allow($group, 'controllers/Purchases/edit');
+        $this->Acl->allow($group, 'controllers/Groups/index');
+        $this->Acl->allow($group, 'controllers/Groups/view');
         $this->Acl->allow($group, 'controllers/Users');
+        $this->Acl->deny($group, 'controllers/Users/delete');
         // Members
         $group->id = 1;
         $this->Acl->deny($group, 'controllers');
-        $this->Acl->allow($group, 'controllers/Items/add');
-        $this->Acl->allow($group, 'controllers/Tags/add');
+        $this->Acl->allow($group, 'controllers/Items');
+        $this->Acl->allow($group, 'controllers/Categories/index');
+        $this->Acl->allow($group, 'controllers/Categories/view');
+        $this->Acl->allow($group, 'controllers/Purchases/index');
+        $this->Acl->allow($group, 'controllers/Purchases/view');
+        $this->Acl->allow($group, 'controllers/Purchases/confirm');
+        $this->Acl->allow($group, 'controllers/Groups/index');
+        $this->Acl->allow($group, 'controllers/Groups/view');
+        $this->Acl->allow($group, 'controllers/Users');
+        $this->Acl->deny($group, 'controllers/Users/delete');
+
+        $data = array(0 => array('User' => array('username' => 'test1',
+                                         'password' => '8c22cd0aea08642744734cea168df020aeb6b593',
+                                         'email' => 'testone@mail.com',
+                                         'nickname' => 'test',
+                                         'first_name' => 'Test',
+                                         'last_name' => 'One',
+                                         'country_id' => 'SE',
+                                         'group_id' => 1)),
+                1 => array('User' => array('username' => 'test2',
+                                   'password' => '320501134148feae5eedbc07cdb71923be638471',
+                                   'email' => 'testtwo@mail.com',
+                                   'nickname' => 'test2',
+                                   'first_name' => 'Test',
+                                   'last_name' => 'Two',
+                                   'country_id' => 'SE',
+                                   'group_id' => 1)),
+                2 => array('User' => array('username' => 'test3',
+                                   'password' => 'a56536f0ca6cd3ae739124af712d7bf23be8bd9d',
+                                   'email' => 'testthree@mail.com',
+                                   'nickname' => 'test3',
+                                   'first_name' => 'Test',
+                                   'last_name' => 'Three',
+                                   'country_id' => 'US',
+                                   'group_id' => 2)),
+                3 => array('User' => array('username' => 'admin',
+                                   'password' => '28c3a486a0ea38fb26e6c1ed18f93efd5b839b9a',
+                                   'email' => 'admin@istrator.com',
+                                   'nickname' => 'admin',
+                                   'first_name' => 'Admin',
+                                   'last_name' => 'Istrator',
+                                   'country_id' => 'NO',
+                                   'group_id' => 3)));
+
+        foreach ($data as $user) {
+            $this->User->create();
+            $this->User->save($user);
+        }
+
+
     }
 
     // Functions for building ACOs ---------------------------------------------------------------

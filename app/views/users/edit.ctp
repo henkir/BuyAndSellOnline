@@ -50,24 +50,28 @@ if (isset($user)) {
             && !empty($user['User']['last_name'])) {
             $name = $user['User']['first_name'] . ' ' . $user['User']['last_name'];
         }
+        $edit = $ajax->link($html->image('edit.gif',
+                    array('alt' => 'Edit',
+                        'class' => 'edit')),
+                array('action' => 'edit',
+                    'id' => $user['User']['id']),
+                array('update' => 'content'),
+                null,
+                false);
+        $delete = '';
+        if ($session->read('Auth.User.id') != $user['User']['id']) {
+            $delete = $ajax->link($html->image('delete.png',
+                          array('alt' => 'Delete',
+                              'class' => 'delete')),
+                      array('action' => 'delete',
+                          'id' => $user['User']['id']),
+                      array('update' => 'content'),
+                      'Delete '.$name.'?',
+                      false);
+        }
         $out .=	$html->tag('li',
                 $html->tag('span', $user['User']['id'] . ' ' . $name).
-                $ajax->link($html->image('edit.gif',
-                        array('alt' => 'Edit',
-                            'class' => 'edit')),
-                    array('action' => 'edit',
-                        'id' => $user['User']['id']),
-                    array('update' => 'content'),
-                    null,
-                    false).' '.
-                $ajax->link($html->image('delete.png',
-                        array('alt' => 'Delete',
-                            'class' => 'delete')),
-                    array('action' => 'delete',
-                        'id' => $user['User']['id']),
-                    array('update' => 'content'),
-                    'Delete '.$name.'?',
-                    false));
+                $edit.' '.$delete);
     }
     echo $html->tag('ul', $out, array('class' => 'editList'));
 

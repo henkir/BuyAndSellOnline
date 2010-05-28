@@ -33,8 +33,9 @@ echo $html->meta(null, null, array('name' => 'keywords',
 echo $html->meta(null, null, array('name' => 'description',
         'content' =>
         'BuyAndSellOnline allows you to sign in using OpenID or Facebook, buying and selling items.'));
+
 // Print location of favicon.
-echo '<link rel="shortcut icon" href="' . $html->url('/') . '/favicon.ico" type="image/x-icon" />';
+echo '<link rel="shortcut icon" href="' . $html->url('/') . 'favicon.ico" type="image/x-icon" />';
 // Print the RSS location.
 echo '<link rel="alternate" type="application/rss+xml" title="BuyAndSellOnline" href="' . $html->url(array('controller' => 'items')) . '/index.rss" />';
 // Print the CSS files to use.
@@ -68,6 +69,9 @@ $header = $html->div('span-23', $banner, array('id' => 'banner')) .
     $spinner;
 // Create the menu.
 $likeButton = '<fb:like href="http://94.254.42.77/BuyAndSellOnline/" layout="button_count"></fb:like>';
+if (isset($userId)) {
+    $this->set('userId', $userId);
+ }
 $menu = $html->div('span-3', $this->element('menu') . $likeButton,
         array('id' => 'menuContainer'));
 

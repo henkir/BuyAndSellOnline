@@ -97,7 +97,7 @@ $login = $html->tag('li',
              array('update' => 'content',
                  'indicator' => 'spinner')));
 
-$search = $form->create('Search', array('controller' => 'items', 'action' => 'index')) .
+$search = $form->create('Search', array('url' => array('controller' => 'items', 'action' => 'index'))) .
     $form->input('keyword', array('label' => false)) .
     $ajax->submit('Search', array('url' => array('controller' => 'items',
                                          'action' => 'index'),
@@ -136,7 +136,14 @@ if ($loggedIn) {
 
 //$menuItems .= $search;
 
-echo $html->div(null, $html->tag('ul', $menuItems) . $search, array('id' => 'menu'));
+$displayName = '';
+if (isset($userId)) {
+    $user = $this->requestAction('/users/view/' . $userId);
+    $displayName = $user['User']['nickname'];
+ }
+
+echo $html->div(null, $html->para(null, $displayName) .
+    $html->tag('ul', $menuItems) . $search, array('id' => 'menu'));
 
 
 ?>

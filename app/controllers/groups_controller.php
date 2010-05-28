@@ -5,7 +5,7 @@ class GroupsController extends AppController {
 
     function beforeFilter() {
         parent::beforeFilter();
-        // TODO: allow index and view?
+        $this->Auth->allowedActions = array('index', 'view', 'initGroups');
     }
 
     function index() {

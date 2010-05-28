@@ -14,7 +14,7 @@ if ($loggedIn) {
     echo 'Already logged in.';
  } else {
     echo '<meta property="og:image" content="http://' . Configure::read('ip') .
-        $html->url('/') . '/img/banner_small.png"/>';
+        $html->url('/') . 'img/banner_small.png"/>';
     echo $javascript->codeBlock("
 window.fbAsyncInit = function() {
         FB.init({appId: '120588011307924', status: true, cookie: true,
@@ -28,13 +28,13 @@ window.fbAsyncInit = function() {
         e.async = true;
         document.getElementById('fb-root').appendChild(e);
       }());");
-    echo $javascript->blockEnd();
+      echo $javascript->blockEnd();
 
     echo $html->para(null, 'You can login using your Facebook account, your OpenID account or the traditional way.');
 
     echo $html->para('form', 'Login using ' .
         $html->link('Facebook', 'http://www.facebook.com/', array('target' => 'blank')) .
-        ' <fb:login-button perms="email,user_about_me"></fb:login-button>');
+        ' <fb:login-button perms="email,user_about_me"></fb:login-button><noscript>(Requires JavaScript)</noscript>');
 
     // Create OpenID form components
     $oForm = $form->create('User',

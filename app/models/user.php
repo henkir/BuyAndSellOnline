@@ -11,7 +11,10 @@ class User extends AppModel {
     /**
      * A User belongs to a Group.
      */
-    var $belongsTo = array('Group', 'Country');
+    var $belongsTo = array('Group' => array(
+                         'className' => 'Group',
+                         'foreignKey' => 'group_id')
+                     , 'Country');
     /**
      * A user acts as a requester.
      */

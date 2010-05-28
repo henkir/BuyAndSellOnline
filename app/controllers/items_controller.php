@@ -6,10 +6,15 @@ class ItemsController extends AppController {
 
     function beforeFilter() {
         parent::beforeFilter();
-        //$this->Auth->allowedActions = array('index', 'view', 'clear');
+        $this->Auth->allowedActions =
+            array('index', 'preview', 'view', 'clear', 'latest', 'terms');
         // Configure FileUpload
         $this->FileUpload->uploadDir = 'img/uploads';
         $this->FileUpload->fileModel = null;
+    }
+
+    function _ownsItem($ownerId = null) {
+        return $this->Auth->user('id') == $ownerId;
     }
 
     /**
@@ -128,47 +133,58 @@ class ItemsController extends AppController {
      * @param id the id of the Item
      */
     function edit($id = null) {
-        $this->Item->id = $id;
+
         if (!empty($this->data)) {
             $this->Item->id = $this->data['Item']['id'];
             $oldData = $this->Item->read();
-            if ($this->FileUpload->success) {
-                $this->_deleteImage($oldData['Item']['image']);
-                $this->data['Item']['image'] = $this->FileUpload->finalFile;
+            if (_ownsItem($oldData['Item']['user_id'])) {
+                if ($this->FileUpload->success) {
+                    $this->_deleteImage($oldData['Item']['image']);
+                    $this->data['Item']['image'] = $this->FileUpload->finalFile;
+                } else {
+                    $this->data['Item']['image'] = $oldData['Item']['image'];
+                }
+                if ($this->Item->save($this->data)) {
+                    $this->Session->setFlash('The item has been saved.',
+                        'default', array('class' => 'success'));
+                } else {
+                    $this->Session->setFlash('Failed saving the item.',
+                        'default', array('class' => 'error'));
+                }
+                $this->redirect('/');
             } else {
-                $this->data['Item']['image'] = $oldData['Item']['image'];
-            }
-            if ($this->Item->save($this->data)) {
-                $this->Session->setFlash('The item has been saved.',
-                    'default', array('class' => 'success'));
-            } else {
-                $this->Session->setFlash('Failed saving the item.',
+                $this->Session->setFlash('You are not allowed to do that.',
                     'default', array('class' => 'error'));
             }
-            $this->redirect('/');
         }
 
         if ($id != null) {
+            $this->Item->id = $id;
             $this->data = $this->Item->read();
-            $this->set('item', $this->Item->read());
-            $this->set('categories', $this->Item->Category->find('list'));
-            $this->set('tags', $this->Item->Tag->find('list'));
-            $this->set('selectedTags', $this->Item->Tag->find('list',
-                    array('joins' => array(
-                            array(
-                                'table' => 'items_tags',
-                                'alias' => 'ItemsTag',
-                                'type' => 'inner',
-                                'conditions'=> array('ItemsTag.tag_id = Tag.id')
-                            ),
-                            array(
-                                'table' => 'items',
-                                'alias' => 'Item',
-                                'type' => 'inner',
-                                'conditions'=> array(
-                                    'Item.id = ItemsTag.item_id',
-                                    'Item.id = ' => $id
-                                ))))));
+            if (_ownsItem($this->data['Item']['user_id'])) {
+                $this->set('item', $this->Item->read());
+                $this->set('categories', $this->Item->Category->find('list'));
+                $this->set('tags', $this->Item->Tag->find('list'));
+                $this->set('selectedTags', $this->Item->Tag->find('list',
+                        array('joins' => array(
+                                array(
+                                    'table' => 'items_tags',
+                                    'alias' => 'ItemsTag',
+                                    'type' => 'inner',
+                                    'conditions'=> array('ItemsTag.tag_id = Tag.id')
+                                ),
+                                array(
+                                    'table' => 'items',
+                                    'alias' => 'Item',
+                                    'type' => 'inner',
+                                    'conditions'=> array(
+                                        'Item.id = ItemsTag.item_id',
+                                        'Item.id = ' => $id
+                                    ))))));
+            } else {
+                $this->Session->setFlash('You are not allowed to do that.',
+                    'default', array('class' => 'error'));
+            }
         }
 
     }
@@ -231,6 +247,9 @@ class ItemsController extends AppController {
      * @param id the id of the Item
      */
     function delete($id) {
+        $this->Item->id = $id;
+        $item = $this->Item->read();
+        if (_ownsItem($item['Item']['user_id'])) {
         if ($this->Item->delete($id)) {
             $this->Session->setFlash('The item has been deleted.',
                 'default', array('class' => 'success'));
@@ -239,6 +258,10 @@ class ItemsController extends AppController {
                 'default', array('class' => 'error'));
         }
         $this->redirect(array('action' => 'edit'));
+        } else {
+            $this->Session->setFlash('You are not allowed to do that.',
+                'default', array('class' => 'error'));
+        }
     }
 
     /**

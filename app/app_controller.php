@@ -4,7 +4,7 @@ class AppController extends Controller {
 
     // We load the most common components here so we won't have to do it in
     // all controllers.
-    var $components = array('RequestHandler', 'Auth', 'Session');
+    var $components = array('RequestHandler', 'Acl', 'Auth', 'Session');
     // We will use these helpers in almost all views.
     var $helpers = array('Html', 'Javascript', 'Ajax',
                    'Form', 'Time', 'Text', 'Number');
@@ -48,20 +48,26 @@ class AppController extends Controller {
      * loggedIn, moderator and admin to true or false.
      */
     function _setPrivileges() {
-        $this->set('loggedIn', false);
-        $this->set('moderator', false);
-        $this->set('admin', false);
-        if ($this->Session->check('Auth.User.id')) {
-            $this->set('loggedIn', true);
-            // TODO: do this in a nicer way?
-            $groupId = $this->Session->read('Auth.User.group_id');
+        $id = $this->Auth->user('id');
+        $groupId = $this->Auth->user('group_id');
+        $loggedIn = false;
+        $moderator = false;
+        $admin = false;
+        if (!empty($id)) {
+            $loggedIn = true;
             if ($groupId >= 2) {
-                $this->set('moderator', true);
+                $moderator = true;
                 if ($groupId >= 3) {
-                    $this->set('admin', true);
+                    $admin = true;
                 }
             }
         }
+        if ($id != null) {
+            $this->set('userId', $id);
+        }
+        $this->set('loggedIn', $loggedIn);
+        $this->set('moderator', $moderator);
+        $this->set('admin', $admin);
     }
 
     /**
@@ -70,6 +76,8 @@ class AppController extends Controller {
     function _setUpAuth() {
         $this->Auth->authorize = 'actions';
         $this->Auth->actionPath = 'controllers/';
+        $this->Auth->autoRedirect = true;
+        $this->Auth->userScope = array('User.banned' => 0);
         $this->Auth->loginAction = array(
             'controller' => 'users',
             'action' => 'login');
@@ -77,8 +85,7 @@ class AppController extends Controller {
         $this->Auth->loginRedirect = '/';
         // Always allow display (view that is rendered in the start page).
         $this->Auth->allowedActions = array('display');
-        // TODO: remove this
-        $this->Auth->allow('*');
+        //$this->Auth->allow('*');
     }
 
 
