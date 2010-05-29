@@ -1,7 +1,9 @@
 <?php
 
 echo $html->tag('h2', $group['Group']['name']);
-
+if ($session->flash()) {
+    echo $session->flash();
+ }
 $out = '';
 
 foreach ($group['User'] as $user) {

@@ -1,18 +1,17 @@
 <?php
 
 echo $html->tag('h2', 'Categories');
-if (isset($category)) {
-    echo $ajax->link('Category list',
-		     array('action' => 'edit'),
-		     array('update' => 'content'));
-    echo $html->para(null, 'Fields marked with bold text are required.');
- }
 
 if ($session->flash()) {
     echo $session->flash();
  }
 
 if (isset($category)) {
+    echo $ajax->link('Category list',
+		     array('action' => 'edit'),
+		     array('update' => 'content'));
+    echo $html->para(null, 'Fields marked with bold text are required.');
+
     // Edit category
     echo $form->create('Category');
     echo $form->input('name',

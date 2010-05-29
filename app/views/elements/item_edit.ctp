@@ -9,6 +9,9 @@
 if (isset($item)) {
 
     echo $html->tag('h2', 'Edit Item');
+    if ($session->flash()) {
+        echo $session->flash();
+    }
     echo $html->para(null,
         'Fields marked with bold text are required. The rest are not required, but recommended.');
     if ($session->flash()) {
@@ -29,7 +32,7 @@ if (isset($item)) {
     $iPrice = $form->input('price', array('label' => 'Price:',
               'class' => 'required validate-currency-dollar'));
     $iPaypal = $form->input('paypal', array('label' => 'Paypal account:',
-               'class' => 'required validate-email'));
+               'class' => 'required'));
     $iImage = $form->input('file',
               array('type' => 'file',
                   'label' => array('style' => 'font-weight:normal',

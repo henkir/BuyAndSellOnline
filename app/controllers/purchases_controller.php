@@ -1,6 +1,7 @@
 <?php
 class PurchasesController extends AppController {
     var $name = 'Purchases';
+    var $components = array('Paypal');
 
     function beforeFilter() {
         parent::beforeFilter();
@@ -12,7 +13,7 @@ class PurchasesController extends AppController {
     function index() {
         $this->paginate = array('limit' => 20,
                           'conditions' => array('Purchase.user_id = ' =>
-                                        $this->Session->read('Auth.User.id')));
+                                        $this->Auth->user('id')));
         $this->set('data', $this->paginate('Purchase'));
     }
 
@@ -36,7 +37,54 @@ class PurchasesController extends AppController {
                     $this->Purchase->saveField('confirmed', true);
                     $this->Session->setFlash('Successfully confirmed purchase.',
                         'default', array('class' => 'success'));
-                    $this->redirect(array('controller' => 'purchases', 'action' => 'index'));
+
+                    $item = $this->Purchase->Item->findById($purchase['Purchase']['item_id']);
+#The stores creditcard info
+                    $paymentInfo = array('Member'=>
+                                   array(
+                                       'first_name' => 'Robin',
+                                       'last_name' => 'Axelsson',
+                                       'billing_address' => '1 Main St',
+                                       'billing_address2' => '',
+                                       'billing_country' => 'US',
+                                       'billing_city' => 'San Jose',
+                                       'billing_state' => 'CA',
+                                       'billing_zip' => '95131'
+                                   ),
+                                   'CreditCard'=>
+                                   array(
+                                       'card_number' => '4835953932033841',
+                                       'credit_type' => 'Visa',
+                                       'expiration_month' => '05',
+                                       'expiration_year' => '2015',
+                                       'cv_code' => '3841'
+                                   ),
+                                   'Order'=>
+                                   array('theTotal' => $item['Item']['price'])
+                                   );
+
+                    $paypalInfo = array('Info'=>
+                                  array(
+                                      'username' => $item['Item']['paypal'],
+                                      'password' => $item['Item']['paypalpass'],
+                                      'signature' => $item['Item']['paypalsignature']
+                                  ));
+
+
+                    $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment", $paypalInfo);
+
+                    $ack = strtoupper($result["ACK"]);
+
+                    $this->log($ack);
+                    $this->log($result['L_LONGMESSAGE0']);
+                    if($ack=="SUCCESSWITHWARNING" || $ack=="SUCCESS") {
+                        $this->Purchase->Item->id = $purchase['Purchase']['item_id'];
+                        $this->Purchase->Item->saveField('sold', true);
+                    } else {
+                        $this->set('error', $result['L_LONGMESSAGE0']);
+                    }
+                    $this->autoRender = false;
+                    $this->redirect('/purchases/index');
                 }
             }
         }
@@ -84,6 +132,6 @@ class PurchasesController extends AppController {
     }
 
 
-}
+  }
 
 ?>

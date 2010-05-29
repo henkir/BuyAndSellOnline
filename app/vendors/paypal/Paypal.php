@@ -8,7 +8,7 @@ class Paypal{
 
 	}
 
-	function DoDirectPayment($paymentInfo=array()){
+	function DoDirectPayment($paymentInfo=array(), $paypalInfo=array()){
 		/**
 		 * Get required parameters from the web form for the request
 		 */
@@ -42,7 +42,7 @@ class Paypal{
 
 		/* Make the API call to PayPal, using API signature.
 		   The API response is stored in an associative array called $resArray */
-		$resArray=$this->hash_call("doDirectPayment",$nvpstr);
+		$resArray=$this->hash_call("doDirectPayment",$nvpstr, $paypalInfo);
 
 		/* Display the API response back to the browser.
 		   If the response from PayPal was a success, display the response parameters'
@@ -87,15 +87,20 @@ class Paypal{
 		return $resArray;
 	}
 
-	function hash_call($methodName,$nvpStr)
+	function hash_call($methodName,$nvpStr, $paypalInfo=array())
 	{
 		require_once 'constants.php';
 
-		$API_UserName=API_USERNAME;
-		$API_Password=API_PASSWORD;
-		$API_Signature=API_SIGNATURE;
-		$API_Endpoint =API_ENDPOINT;
+		#$API_UserName=API_USERNAME;
+		#$API_Password=API_PASSWORD;
+		#$API_Signature=API_SIGNATURE;
+		#$API_Endpoint =API_ENDPOINT;
 		$version=VERSION;
+
+		$API_UserName=$paypalInfo['Info']['username'];
+		$API_Password=$paypalInfo['Info']['password'];
+		$API_Signature=$paypalInfo['Info']['signature'];
+		$API_Endpoint =API_ENDPOINT;
 
 		//setting the curl parameters.
 		$ch = curl_init();

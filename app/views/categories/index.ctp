@@ -1,5 +1,8 @@
 <?php
 echo $html->tag('h2', 'Categories');
+if ($session->flash()) {
+    echo $session->flash();
+ }
 $paginator->options(array('update' => 'content', 'indicator' => 'spinner'));
 echo $ajax->div('categories');
 // Print sort options

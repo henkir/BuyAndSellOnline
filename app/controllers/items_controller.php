@@ -257,7 +257,8 @@ class ItemsController extends AppController {
                 $this->Session->setFlash('Failed deleting the item.',
                     'default', array('class' => 'error'));
             }
-            $this->redirect(array('controller' => 'items', 'action' => 'edit'));
+            $this->autoRender = false;
+            $this->redirect('/items/index');
         } else {
             $this->Session->setFlash('You are not allowed to do that.',
                 'default', array('class' => 'error'));
@@ -301,15 +302,22 @@ class ItemsController extends AppController {
                                ),
                                'CreditCard'=>
                                array(
-                                   'card_number' =>'4188840036423288',
+                                   'card_number' => $this->data['User']['creditcard'],
                                    'credit_type' => 'Visa',
-                                   'expiration_month' =>'05',
-                                   'expiration_year' =>'2015',
-                                   'cv_code' =>'3288'
+                                   'expiration_month' => $this->data['User']['expmonth'],
+                                   'expiration_year' => $this->data['User']['expyear'],
+                                   'cv_code' => $this->data['User']['cvv']
                                ),
                                'Order'=>
                                array('theTotal' => $item['Item']['price'])
                 );
+
+                $paypalInfo = array('Info'=>
+                              array(
+                                  'username' => 'robban_1274642016_biz_api1.hotmail.com',
+                                  'password' => '1274642026',
+                                  'signature' => 'AFcWxV21C7fd0v3bYYYRCpSSRl31AIhW89.q6lBZucF.z4LsF3w0d7oJ'
+                              ));
 
                 /*
                  * On Success, $result contains [AMT] [CURRENCYCODE] [AVSCODE] [CVV2MATCH]
@@ -323,7 +331,7 @@ class ItemsController extends AppController {
                  * ACK will either be "Success" or "Failure"
                  */
 
-                $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment");
+                $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment", $paypalInfo);
                 $ack = strtoupper($result["ACK"]);
 
                 if($ack=="SUCCESSWITHWARNING" || $ack=="SUCCESS") {

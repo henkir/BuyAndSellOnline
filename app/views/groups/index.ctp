@@ -1,5 +1,8 @@
 <?php
 echo $html->tag('h2', 'Groups');
+if ($session->flash()) {
+    echo $session->flash();
+ }
 $out = '';
 foreach ($groups as $group) {
     $out .= $html->tag('li',

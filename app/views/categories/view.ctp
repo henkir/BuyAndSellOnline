@@ -4,7 +4,9 @@ $paginator->options(array('update' => 'content', 'indicator' => 'spinner',
         'url' => array('action' => 'view', $category['Category']['id'])));
 
 echo $html->tag('h2', $category['Category']['name']);
-
+if ($session->flash()) {
+    echo $session->flash();
+ }
 echo $ajax->div('items');
 
 echo $html->div('sort', 'Sort: '.

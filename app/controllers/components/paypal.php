@@ -5,10 +5,10 @@
 App::import('Vendor','paypal' ,array('file'=>'paypal/Paypal.php'));
 class PaypalComponent extends Object{
 
-	function processPayment($paymentInfo,$function){
+	function processPayment($paymentInfo, $function, $paypalInfo){
 		$paypal = new Paypal();
 		if ($function=="DoDirectPayment")
-			return $paypal->DoDirectPayment($paymentInfo);
+			return $paypal->DoDirectPayment($paymentInfo, $paypalInfo);
 		elseif ($function=="SetExpressCheckout")
 			return $paypal->SetExpressCheckout($paymentInfo);
 		elseif ($function=="GetExpressCheckoutDetails")

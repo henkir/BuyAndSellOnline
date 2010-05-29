@@ -34,7 +34,7 @@ $addItem = $html->tag('li',
 
 $myItems = $html->tag('li',
            $ajax->link('My Items',
-               array('controller' => 'users', 'action' => 'items'),
+               array('controller' => 'users', 'action' => 'viewitems'),
                array('update' => 'content',
                    'indicator' => 'spinner')));
 

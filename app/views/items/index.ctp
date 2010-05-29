@@ -1,5 +1,9 @@
 <?php
 
+if ($session->flash()) {
+    echo $session->flash();
+ }
+
   // If items is set then print filtered and paginated Items.
 if (isset($data)) {
     // Print filter

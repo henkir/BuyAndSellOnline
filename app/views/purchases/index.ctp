@@ -11,6 +11,7 @@ foreach ($data as $purchase) {
                    array('controller' => 'purchases', 'action' => 'confirm',
                        $purchase['Purchase']['id']),
                    array('update' => 'content',
+                       'indicator' => 'spinner',
                        'confirm' =>
                        'Confirm ' . $purchase['Item']['name'] . '?'));
     } else {

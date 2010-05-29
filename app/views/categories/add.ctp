@@ -1,5 +1,8 @@
 <?php
 echo $html->tag('h2', 'Add Category');
+if ($session->flash()) {
+    echo $session->flash();
+ }
 echo $html->para(null, 'Fields marked with bold text are required.');
 if ($session->flash()) {
     echo $session->flash();

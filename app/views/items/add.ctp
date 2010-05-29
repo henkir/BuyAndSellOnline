@@ -7,11 +7,11 @@
    */
 
 echo $html->tag('h2', 'Add Item');
-echo $html->para(null,
-		 'Fields marked with bold text are required. The rest are not required, but recommended.');
 if ($session->flash()) {
     echo $session->flash();
  }
+echo $html->para(null,
+		 'Fields marked with bold text are required. The rest are not required, but recommended.');
 
 // Create form components
 $iForm = $form->create('Item',
@@ -24,7 +24,11 @@ $iCategory = $form->input('categories', array('label' => 'Category:',
 $iPrice = $form->input('price', array('label' => 'Price:',
               'class' => 'required validate-currency-dollar'));
 $iPaypal = $form->input('paypal', array('label' => 'Paypal account:',
-               'class' => 'required validate-email'));
+               'class' => 'required'));
+$iPaypalpass = $form->input('paypalpass', array('label' => 'Paypal password:',
+		   'class' => 'required'));
+$iPaypalsignature = $form->input('paypalsignature', array('label' => 'Paypal signature:',
+		   'class' => 'required'));
 $iImage = $form->input('file',
           array('type' => 'file',
               'label' => array('style' => 'font-weight:normal',
@@ -54,7 +58,7 @@ $iSubmit = $html->div(null, $form->label(null, '') .
 		      $form->end('Add Item'));
 
 // Print form components
-echo $iForm . $iName . $iCategory . $iPrice . $iPaypal . $iImage . $iDescription .
+echo $iForm . $iName . $iCategory . $iPrice . $iPaypal . $iPaypalpass . $iPaypalsignature . $iImage . $iDescription .
 /*$iTag .*/ $iAgreed . $iSetFocus . $iSubmit;
 
 ?>

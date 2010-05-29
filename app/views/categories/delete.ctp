@@ -1,4 +1,7 @@
-<?php echo $session->flash(); ?>
+<?php
+if ($session->flash()) {
+    echo $session->flash();
+ } ?>
 <h2>Delete category</h2>
 <?php
 echo $form->create('Category');

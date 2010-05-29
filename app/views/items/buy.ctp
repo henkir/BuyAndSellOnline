@@ -2,7 +2,10 @@
 
 if (isset($confirm)) {
     echo $html->tag('h2', 'Purchase confirmed');
-    echo $html->para(null, 'You have bought "' . $item['Item']['name'] . '" from ' .
+    if ($session->flash()) {
+        echo $session->flash();
+    }
+    echo $html->para('success', 'You have bought "' . $item['Item']['name'] . '" from ' .
         $seller['User']['first_name'] . ' ' . $seller['User']['last_name'] .
         ' living in ' . $seller['Country']['name'] . '.');
     echo $html->para(null, 'Do not forget to confirm when you have received the purchased item.');
@@ -30,6 +33,14 @@ if (isset($confirm)) {
       echo $form->input('countries', array('label' => 'Country:',
               'default' => $user['User']['country_id'],
               'empty' => '(choose one)'));
+      echo $form->input('creditcard', array('label' => 'Creditcard:',
+	      'default' => $user['User']['creditcard']));
+      echo $form->input('cvv', array('label' => 'CVV:',
+	      'default' => $user['User']['cvv']));
+      echo $form->input('expyear', array('label' => 'Expires Year:',
+	      'default' => $user['User']['year']));
+      echo $form->input('expmonth', array('label' => 'Expires Month:',
+	      'default' => $user['User']['month']));
 
       echo $ajax->submit('Buy', array('url' => array('controller' => 'items',
                                              'action' => 'buy', $item['Item']['id'],
