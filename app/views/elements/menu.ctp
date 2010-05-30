@@ -12,7 +12,7 @@ $updateMenu = 'new Ajax.Updater("menu","' .
     '",{method:"get",evalScripts:true});';
 
 
-
+// Create all links.
 
 $home = $html->tag('li',
         $ajax->link('Home',
@@ -87,6 +87,7 @@ $usersEdit = $html->tag('li',
                  array('update' => 'content',
                      'indicator' => 'spinner')));
 
+// Login/logout links
 $logout = $html->tag('li',
           $html->link('Logout',
               array('controller' => 'users', 'action' => 'logout')));
@@ -97,6 +98,7 @@ $login = $html->tag('li',
              array('update' => 'content',
                  'indicator' => 'spinner')));
 
+// Search form
 $search = $form->create('Search', array('url' => array('controller' => 'items', 'action' => 'index'))) .
     $form->input('keyword', array('label' => false)) .
     $ajax->submit('Search', array('url' => array('controller' => 'items',
@@ -106,6 +108,7 @@ $search = $form->create('Search', array('url' => array('controller' => 'items', 
             'complete' => "Form.Element.setValue('SearchKeyword', '')")) .
     $form->end();
 
+// Construct menu using loggedIn, moderator and admin variables.
 $adminItems = '';
 $menuItems = $home . $browse . $categories /*. $tags*/;
 if ($loggedIn) {
@@ -136,10 +139,14 @@ if ($loggedIn) {
 
 //$menuItems .= $search;
 
+// Get users display name.
 $displayName = '';
 if (isset($userId)) {
     $user = $this->requestAction('/users/view/' . $userId);
     $displayName = $user['User']['nickname'];
+    if (empty($displayName)) {
+        $displayName = $user['User']['first_name'] . $user['User']['last_name'];
+    }
  }
 
 echo $html->div(null, $html->para(null, $displayName) .

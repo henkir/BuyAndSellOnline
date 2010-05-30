@@ -1,5 +1,9 @@
 <?php
 
+  /**
+   * Creates a form for searching items.
+   */
+
 echo $ajax->div('item_filter');
 echo $form->create('Item', array('action' => 'index'));
 echo $form->input('keyword', array('label' => 'Search: ', 'default' => $session->read('Items.keyword'), 'div' => false));

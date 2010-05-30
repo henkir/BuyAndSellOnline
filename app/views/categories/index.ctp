@@ -11,6 +11,7 @@ echo $html->div('sort', 'Sort: '.
     $paginator->sort('Created', 'created'));
 
 $out = '';
+// Create a link for each category.
 foreach ($data as $category) {
     $out .= $html->tag('li',
 		       $ajax->link($category['Category']['name'],

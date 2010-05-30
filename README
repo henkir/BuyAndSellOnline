@@ -8,14 +8,23 @@ User login is handled with the OpenID API providing good security, and payments 
 # Installation
 To get the website going, put the entire directory structure inside a directory that is accessible by the web server (probably www, www-pub or something like that). If you do not put it in the web root, but in a sub directory, you need to change the lines specifying the CSS files in BuyAndSellOnline/app/views/layouts/default.ctp to the appropriate paths. Then create a MySQL database and a user for the website to use. You can use these commands:
 
-    Make sure you are in the BuyAndSellOnline directory.
+    cd to the BuyAndSellOnline/database directory.
     Enter: mysql -u root -p
     Then enter your password.
-    Then enter "source database/init_db.sql".
-    To create the MySQL user for CakePHP, enter "source database/create_user.sql" without the quotes.
+    Then enter "source init_db.sql".
+    To create the MySQL user for CakePHP, enter "create_user.sql" without the quotes.
 
 You need to make sure that the files have the correct permissions. To be sure it will work:
     Go to the BuyAndSellOnline directory.
     Type sudo chmod -R 777 app/
+
+Then open BuyAndSellOnline/app/app_controller.php and locate this line in beforeFilter():
+Configure::write('debug', 2);
+Change it to:
+Configure::write('debug', 0);
+Then use your browser and go to the url http://example.com/BuyAndSellOnline/users/initDB if your server has the domain name example.com and you placed the entire directory in the webroot. This initializes the groups and builds the Acl.
+Then change the line in app_controller.php back if you don't want debugging enabled.
+
+In BuyAndSellOnline/app/app_controller.php there's a function _configure where you can configure how many items to show at once etc. You also set your IP address or domain name there. It's required for the OpenID authentication.
 
 This will give the web server access to all the files it may need.

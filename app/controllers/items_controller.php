@@ -13,15 +13,22 @@ class ItemsController extends AppController {
         $this->FileUpload->fileModel = null;
     }
 
+    /**
+     * Returns true if the logged in user owns the item with the
+     * specified id.
+     */
     function _ownsItem($ownerId = null) {
         return $this->Auth->user('id') == $ownerId;
     }
 
     /**
-     * Gets all Items if id is null. If id is not null it gets the Item with that
-     * id. If it is an RSS request it gets the Items for the RSS feed.
+     * Gets all Items if id is null. If id is not null it gets the Item with
+     * that id. If it is an RSS request it gets the Items for the RSS feed.
      */
     function index($id = null) {
+        // If request is ajax and id is set, get the item with that id.
+        // If request is rss, get the 20 latest items and change the header.
+        // Otherwise get pagenated items.
         if ($id != null && $this->RequestHandler->isAjax()) {
             $this->Item->id = $id;
             $this->set('item', $this->Item->read());
@@ -38,6 +45,7 @@ class ItemsController extends AppController {
             $this->paginate = array('limit' => Configure::read('itemsPerPage'),
                               'order' => array('Item.created' => 'desc'),
                               'conditions' => array('Item.sold = ' => false));
+            // Paginate using the search.
             $data = $this->paginate(null, $this->_filterSearch());
             $this->set('data', $data);
         }
@@ -133,17 +141,20 @@ class ItemsController extends AppController {
      * @param id the id of the Item
      */
     function edit($id = null) {
-
+        // If there is post data, try to save it.
         if (!empty($this->data)) {
             $this->Item->id = $this->data['Item']['id'];
             $oldData = $this->Item->read();
+            // Check that the user owns the item.
             if ($this->_ownsItem($oldData['Item']['user_id'])) {
+                // If user uploaded an image, get the name of the file.
                 if ($this->FileUpload->success) {
                     $this->_deleteImage($oldData['Item']['image']);
                     $this->data['Item']['image'] = $this->FileUpload->finalFile;
                 } else {
                     $this->data['Item']['image'] = $oldData['Item']['image'];
                 }
+                // Try to save it.
                 if ($this->Item->save($this->data)) {
                     $this->Session->setFlash('The item has been saved.',
                         'default', array('class' => 'success'));
@@ -157,14 +168,16 @@ class ItemsController extends AppController {
                     'default', array('class' => 'error'));
             }
         }
-
+        // Id should never be null.
         if ($id != null) {
             $this->Item->id = $id;
             $this->data = $this->Item->read();
+            // Check that user owns the item.
             if ($this->_ownsItem($this->data['Item']['user_id'])) {
+                // Set item, categories
                 $this->set('item', $this->Item->read());
                 $this->set('categories', $this->Item->Category->find('list'));
-                $this->set('tags', $this->Item->Tag->find('list'));
+                /*$this->set('tags', $this->Item->Tag->find('list'));
                 $this->set('selectedTags', $this->Item->Tag->find('list',
                         array('joins' => array(
                                 array(
@@ -180,7 +193,7 @@ class ItemsController extends AppController {
                                     'conditions'=> array(
                                         'Item.id = ItemsTag.item_id',
                                         'Item.id = ' => $id
-                                    ))))));
+                                        ))))));*/
             } else {
                 $this->Session->setFlash('You are not allowed to do that.',
                     'default', array('class' => 'error'));
@@ -189,6 +202,9 @@ class ItemsController extends AppController {
 
     }
 
+    /**
+     * Gets the item with the specified id.
+     */
     function editPreview($id) {
         $this->Item->id = $id;
         $this->set('item', $this->Item->read());
@@ -198,23 +214,30 @@ class ItemsController extends AppController {
      * Adds the Item with the data supplied in the form.
      */
     function add() {
+        // Get a list of categories.
         $this->set('categories', $this->Item->Category->find('list'));
-        $this->set('tags', $this->Item->Tag->find('list'));
+        //$this->set('tags', $this->Item->Tag->find('list'));
+        // If there is post data, try to save it.
         if (!empty($this->data)) {
+            // Check if user uploaded an image, if so get it's name.
             if ($this->FileUpload->success) {
                 $this->data['Item']['image'] = $this->FileUpload->finalFile;
             } else {
                 $this->data['Item']['image'] = null;
             }
 
+            // Check that user is logged in.
             if ($this->Session->check('Auth.User.id')) {
-                $this->data['Item']['user_id'] = $this->Session->read('Auth.User.id');
+                // Set the user id and category id.
+                $this->data['Item']['user_id'] = $this->Auth->user('id');
                 $this->data['Item']['category_id'] = $this->data['Item']['categories'];
+                // Try to save item.
                 if ($this->Item->save($this->data)) {
                     $this->Session->setFlash('The item has been saved.',
                         'default', array('class' => 'success'));
                     $this->redirect('/');
                 } else {
+                    // Delete image if failed.
                     if (!empty($this->data['Item']['image'])) {
                         $this->_deleteImage($this->data['Item']['image']);
                     }
@@ -233,6 +256,9 @@ class ItemsController extends AppController {
         }
     }
 
+    /**
+     * Deletes the image with given name.
+     */
     function _deleteImage($name) {
         $file = new File(WWW_ROOT .
                 $this->FileUpload->uploadDir . '/' .
@@ -249,7 +275,11 @@ class ItemsController extends AppController {
     function delete($id) {
         $this->Item->id = $id;
         $item = $this->Item->read();
+        // If user owns the item, delete it.
         if ($this->_ownsItem($item['Item']['user_id'])) {
+            if (!empty($item['Item']['image'])) {
+                $this->_deleteImage($item['Item']['image']);
+            }
             if ($this->Item->delete($id)) {
                 $this->Session->setFlash('The item has been deleted.',
                     'default', array('class' => 'success'));
@@ -280,8 +310,11 @@ class ItemsController extends AppController {
     function buy($id, $confirm = null) {
         $this->Item->id = $id;
         $item = $this->Item->read();
+        // Check that item hasn't been sold.
         if ($item['Item']['sold'] == 0) {
+            // Confirm will not be null when user has submitted payment form.
             if ($confirm == null) {
+                // Get the item, user and a country list.
                 $this->Item->id = $id;
                 $this->set('item', $this->Item->read());
                 $this->set('user',
@@ -289,6 +322,7 @@ class ItemsController extends AppController {
                 $this->set('countries',
                     $this->Item->User->Country->find('list', array('order' => 'Country.name ASC')));
             } else {
+                // Get the payment info.
                 $paymentInfo = array('Member'=>
                                array(
                                    'first_name' => $this->data['User']['first_name'],
@@ -311,7 +345,7 @@ class ItemsController extends AppController {
                                'Order'=>
                                array('theTotal' => $item['Item']['price'])
                 );
-
+                // Where the payment should go.
                 $paypalInfo = array('Info'=>
                               array(
                                   'username' => 'robban_1274642016_biz_api1.hotmail.com',
@@ -331,10 +365,12 @@ class ItemsController extends AppController {
                  * ACK will either be "Success" or "Failure"
                  */
 
+                // Transfer money.
                 $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment", $paypalInfo);
                 $ack = strtoupper($result["ACK"]);
 
-                if($ack=="SUCCESSWITHWARNING" || $ack=="SUCCESS") {
+                if ($ack=="SUCCESSWITHWARNING" || $ack=="SUCCESS") {
+                    // Successful payment. Set sold to true, add to purchases.
                     $this->Item->id = $id;
                     $this->Item->saveField('sold', true);
                     $item = $this->Item->read();
@@ -343,15 +379,18 @@ class ItemsController extends AppController {
                                     $this->Session->read('Auth.User.id'),
                                     'item_id' => $id));
                     $this->Item->Purchase->save($purchase);
+                    // Get item seller and set confirmed to true.
                     $this->set('item', $item);
                     $this->set('seller', $this->Item->User->findById($item['User']['id']));
                     $this->set('confirm', true);
 
                 } else {
+                    // Payment didn't go through.
                     $this->set('error', $result['L_LONGMESSAGE0']);
                 }
             }
         } else {
+            // Item has already been bought.
             $this->set('purchased', true);
         }
     }

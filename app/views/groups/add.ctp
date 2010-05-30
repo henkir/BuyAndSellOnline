@@ -1,5 +1,5 @@
-<h2>Add group</h2>
 <?php
+echo $html->tag('h2', 'Add group');
 if ($session->flash()) {
     echo $session->flash();
  }

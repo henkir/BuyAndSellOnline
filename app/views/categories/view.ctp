@@ -16,6 +16,7 @@ echo $html->div('sort', 'Sort: '.
         $html->div('spinner', $html->image('/img/loading.gif'),
         array('id' => 'spinner', 'style' => 'display:none')));
 
+// Print all items belonging to that category.
 foreach ($data as $item) {
     $this->set('item', $item);
     echo $html->div('item', $this->element('item_preview'),

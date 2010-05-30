@@ -4,6 +4,7 @@ if ($session->flash()) {
     echo $session->flash();
  }
 $out = '';
+// Prints all groups.
 foreach ($groups as $group) {
     $out .= $html->tag('li',
 		       $ajax->link($group['Group']['name'],

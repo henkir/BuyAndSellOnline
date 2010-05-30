@@ -5,6 +5,7 @@
    */
 
 $out = '';
+// Print all the latest items.
 foreach ($items as $item) {
 
     $this->set('item', $item);

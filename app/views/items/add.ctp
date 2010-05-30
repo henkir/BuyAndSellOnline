@@ -13,7 +13,8 @@ if ($session->flash()) {
 echo $html->para(null,
 		 'Fields marked with bold text are required. The rest are not required, but recommended.');
 
-// Create form components
+// Create form components. CSS class will also determine what kind of
+// javascript validation will be applied.
 $iForm = $form->create('Item',
          array('enctype' => 'multipart/form-data', 'class' => 'addItem'));
 $iName = $form->input('name', array('label' => 'Title:',
@@ -38,10 +39,10 @@ $iDescription = $form->input('description',
                 array('label' => array('style' => 'vertical-align:top',
                                'text' => 'Description:'),
                     'class' => 'required'));
-$iTag = $form->input('Tag',
+/*$iTag = $form->input('Tag',
         array('label' =>
             array('style' => 'vertical-align:top;font-weight:normal',
-                'text' => 'Tags:')));
+            'text' => 'Tags:')));*/
 $iAgreed = $form->input('agreed', array('label' => 'I agree to the ' .
 					$html->link('terms',
 						    array('controller' => 'items',

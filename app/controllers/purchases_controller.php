@@ -8,7 +8,7 @@ class PurchasesController extends AppController {
     }
 
     /**
-     * Gets all Purchases.
+     * Gets all Purchases paginated.
      */
     function index() {
         $this->paginate = array('limit' => 20,
@@ -27,19 +27,19 @@ class PurchasesController extends AppController {
         $this->set('purchase', $this->Purchase->read());
     }
 
+    /**
+     * Confirms the purchase with the specified id.
+     */
     function confirm($id) {
         if (!empty($id)) {
             $this->Purchase->id = $id;
             $purchase = $this->Purchase->read();
+            // Check that logged in user should confirm purchase.
             if ($purchase['Purchase']['user_id']
-                == $this->Session->read('Auth.User.id')) {
+                == $this->Auth->user('id')) {
+                // Check that it hasn't been confirmed.
                 if (!$purchase['Purchase']['confirmed']) {
-                    $this->Purchase->saveField('confirmed', true);
-                    $this->Session->setFlash('Successfully confirmed purchase.',
-                        'default', array('class' => 'success'));
-
-                    $item = $this->Purchase->Item->findById($purchase['Purchase']['item_id']);
-#The stores creditcard info
+                    // The stores creditcard info
                     $paymentInfo = array('Member'=>
                                    array(
                                        'first_name' => 'Robin',
@@ -63,6 +63,7 @@ class PurchasesController extends AppController {
                                    array('theTotal' => $item['Item']['price'])
                                    );
 
+                    // Seller's details.
                     $paypalInfo = array('Info'=>
                                   array(
                                       'username' => $item['Item']['paypal'],
@@ -70,16 +71,17 @@ class PurchasesController extends AppController {
                                       'signature' => $item['Item']['paypalsignature']
                                   ));
 
-
+                    // Transfer money.
                     $result = $this->Paypal->processPayment($paymentInfo,"DoDirectPayment", $paypalInfo);
 
                     $ack = strtoupper($result["ACK"]);
 
-                    $this->log($ack);
-                    $this->log($result['L_LONGMESSAGE0']);
                     if($ack=="SUCCESSWITHWARNING" || $ack=="SUCCESS") {
-                        $this->Purchase->Item->id = $purchase['Purchase']['item_id'];
-                        $this->Purchase->Item->saveField('sold', true);
+                        // If successful, set confirmed to true.
+                        $this->Purchase->saveField('confirmed', true);
+                        $this->Session->setFlash('Successfully confirmed purchase.',
+                            'default', array('class' => 'success'));
+
                     } else {
                         $this->set('error', $result['L_LONGMESSAGE0']);
                     }

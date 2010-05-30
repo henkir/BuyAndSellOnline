@@ -23,6 +23,7 @@ class AppController extends Controller {
 
     function beforeFilter() {
         parent::beforeFilter();
+        // Required to be at least 1 to run users/initDB to setup Acl
         Configure::write('debug', 2);
         $this->_configure();
         $this->_checkAjax();
@@ -33,8 +34,11 @@ class AppController extends Controller {
 
     }
 
+    /**
+     * Sets some global configuration variables, including number of items
+     * to show per page and the servers IP address.
+     */
     function _configure() {
-        // Set the relative URL from the web root directory. Empty if root.
         // Set the IP of the server. Needed for OpenID.
         Configure::write('ip', '94.254.42.77');
         Configure::write('itemsPerPage', 8);
@@ -77,6 +81,7 @@ class AppController extends Controller {
         $this->Auth->authorize = 'actions';
         $this->Auth->actionPath = 'controllers/';
         $this->Auth->autoRedirect = true;
+        // Don't allow banned users to login.
         $this->Auth->userScope = array('User.banned' => 0);
         $this->Auth->loginAction = array(
             'controller' => 'users',
@@ -85,7 +90,6 @@ class AppController extends Controller {
         $this->Auth->loginRedirect = '/';
         // Always allow display (view that is rendered in the start page).
         $this->Auth->allowedActions = array('display');
-        //$this->Auth->allow('*');
     }
 
 

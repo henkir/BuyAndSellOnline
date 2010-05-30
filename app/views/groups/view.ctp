@@ -5,7 +5,7 @@ if ($session->flash()) {
     echo $session->flash();
  }
 $out = '';
-
+// Prints all users in the group.
 foreach ($group['User'] as $user) {
     $link = $ajax->link($user['username'],
 			array('controller' => 'users',

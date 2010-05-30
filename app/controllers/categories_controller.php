@@ -9,7 +9,7 @@ class CategoriesController extends AppController {
     }
 
     /**
-     * Gets all Categories.
+     * Gets all Categories pagenated.
      */
     function index() {
         $paginate = array('limit' => Configure::read('categoriesPerPage'),
@@ -19,7 +19,7 @@ class CategoriesController extends AppController {
     }
 
     /**
-     * Gets the Category with the given id.
+     * Gets the items belonging to the Category with the given id.
      *
      * @param id the id of the Category
      */
@@ -42,6 +42,7 @@ class CategoriesController extends AppController {
     function edit($id = null) {
         $paginate = array('limit' => Configure::read('categoriesPerPage'),
                           'order' => array('Category.name' => 'asc'));
+        // If there is post data, try to save.
         if (!empty($this->data)) {
             if ($this->Category->save($this->data)) {
                 $this->Session->setFlash('The category has been saved.',
@@ -52,6 +53,8 @@ class CategoriesController extends AppController {
             }
 
         }
+        // If id is null, show the pagenated categories.
+        // Otherwise, show that category.
         if ($id == null) {
             $this->set('data', $this->paginate());
         } else {
@@ -78,6 +81,7 @@ class CategoriesController extends AppController {
                     'default', array('class' => 'error'));
             }
         }
+        // Gets a list of all categories that can be parent.
         $this->set('categories', $this->Category->find('list'));
     }
 
@@ -88,14 +92,13 @@ class CategoriesController extends AppController {
      */
     function delete($id) {
         if ($this->Category->delete($id)) {
-	    $this->Session->setFlash('The category has been deleted.',
-            'default', array('class' => 'success'));
+            $this->Session->setFlash('The category has been deleted.',
+                'default', array('class' => 'success'));
         } else {
             $this->Session->setFlash('Failed deleting the category.',
                 'default', array('class' => 'error'));
         }
-        $this->redirect(
-            array('controller' => 'categories', 'action' => 'edit'));
+        $this->redirect('/categories/edit');
     }
 
   }

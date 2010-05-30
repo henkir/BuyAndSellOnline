@@ -6,6 +6,8 @@ if ($session->flash()) {
     echo $session->flash();
  }
 
+// If category is set, create a form for editing.
+// Otherwise show paginated categories.
 if (isset($category)) {
     echo $ajax->link('Category list',
 		     array('action' => 'edit'),
@@ -41,6 +43,7 @@ if (isset($category)) {
             array('id' => 'spinner', 'style' => 'display:none')));
     // Show list of all categories, with delete links
     $out = '';
+    // Create a edit and delete link for each category.
     foreach ($data as $category) {
         $out .=	$html->tag('li',
                 $html->tag('span', $category['Category']['name']).

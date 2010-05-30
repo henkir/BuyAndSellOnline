@@ -14,6 +14,7 @@ $click = $ajax->link($item['Item']['name'],
 $title = $html->tag('h5', $click);
 $image = '';
 $description = '';
+// If item has an image, show it. Otherwise show some of the description.
 if (!empty($item['Item']['image'])) {
     $image = $ajax->link($html->image('/img/uploads/' .
                  $item['Item']['image'],

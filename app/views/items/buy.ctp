@@ -1,6 +1,7 @@
 <?php
 
 if (isset($confirm)) {
+    // Purchase has been confirmed.
     echo $html->tag('h2', 'Purchase confirmed');
     if ($session->flash()) {
         echo $session->flash();
@@ -12,9 +13,11 @@ if (isset($confirm)) {
  } elseif (isset($error)) {
      echo $error;
    } elseif (isset($purchased)) {
-       echo $html->tag('h2', 'Bought');
+       // Item has already been purchased.
+       echo $html->tag('h2', 'Purchased');
        echo $html->para(null, 'The item has already been purchased.');
      } else {
+      // Create the form for getting all payment information.
       echo $html->tag('h2', 'Buy ' . $item['Item']['name']);
       echo $form->create('User', array('class' => 'addItem',
               'url' => array('controller' => 'items',

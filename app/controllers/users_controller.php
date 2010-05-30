@@ -16,6 +16,11 @@ class UsersController extends AppController {
             array('index', 'view', 'viewitems', 'login', 'logout', 'build_acl', 'initDB');
     }
 
+    /**
+     * Returns true if logged in user is the user with the specified id,
+     * or if the logged in user is a moderator or admin and has at least
+     * the same privileges as the user with the specified id.
+     */
     function _allowed($userId = null) {
         if ($userId == null) {
             return $this->Auth->user('group_id') >= 2;
@@ -32,7 +37,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * Gets all Users.
+     * Gets all Users paginated.
      */
     function index() {
         $paginate = array('limit' => Configure::read('usersPerPage'),
@@ -41,13 +46,17 @@ class UsersController extends AppController {
         $this->set('data', $data);
     }
 
+    /**
+     * Gets all Items paginated that belongs to the User with the specified id,
+     * or if id is null, the user logged in.
+     */
     function viewitems($id = null) {
         $this->paginate = array('limit' => Configure::read('itemsPerPage'),
                           'order' => array('Item.created' => 'desc'),
                           'conditions' => array('Item.sold = ' => false));
         if ($id == null) {
             if ($this->Session->check('Auth.User.id')) {
-                $id = $this->Session->read('Auth.User.id');
+                $id = $this->Auth->user('id');
                 $data = $this->paginate('Item', array('Item.user_id = ' => $id));
                 $this->set('data', $data);
                 $this->User->id = $id;
@@ -80,12 +89,14 @@ class UsersController extends AppController {
      * @param id the id of the User
      */
     function edit($id = null) {
+        // Check that user is allowed.
         if ($this->_allowed($id)) {
             $paginate = array('limit' => Configure::read('usersPerPage'),
                         'order' => array('User.created' => 'desc'),
                         'conditions' =>
                         array('User.group_id <= ' =>
                             $this->Session->read('Auth.User.group_id')));
+            // Try to save data.
             if (!empty($this->data)) {
                 $this->data['User']['group_id'] = $this->data['User']['groups'];
                 if ($this->User->save($this->data)) {
@@ -97,6 +108,8 @@ class UsersController extends AppController {
                 }
 
             }
+            // If id is null, paginate users. Otherwise get groups and the
+            // user with correct id.
             if ($id == null) {
                 $this->set('data', $this->paginate());
             } else {
@@ -132,10 +145,14 @@ class UsersController extends AppController {
      * @param id the id of the User
      */
     function delete($id) {
-        $this->User->delete($id);
-        $this->Session->setFlash('The user has been deleted.',
-            'default', array('class' => 'success'));
-        $this->redirect(array('action' => 'edit'));
+        if ($this->User->delete($id)) {
+            $this->Session->setFlash('The user has been deleted.',
+                'default', array('class' => 'success'));
+        } else {
+            $this->Session->setFlash('Failed deleting the user.',
+                'default', array('class' => 'error'));
+        }
+        $this->redirect('/users/edit');
     }
 
     /**
@@ -143,6 +160,7 @@ class UsersController extends AppController {
      */
     function register() {
         if (!empty($this->data)) {
+            // Hash the password and set the group to member.
             $this->data['User']['password'] =
                 $this->Auth->password($this->data['User']['passwd']);
             $this->data['User']['group_id'] = 1;
@@ -152,7 +170,6 @@ class UsersController extends AppController {
                     array('class' => 'success'));
                 $this->render('login');
             } else {
-
                 $this->Session->setFlash('Failed to register.',
                     'default',
                     array('class' => 'error'));
@@ -160,14 +177,24 @@ class UsersController extends AppController {
         }
     }
 
+    /**
+     * Gets the facebook cookie if any. Public method making it accessible from
+     * other controllers or views.
+     */
     function check() {
         return $this->_facebook();
     }
 
+    /**
+     * Gets the facebook cookie if any.
+     */
     function _facebook() {
         return $this->_getFacebookCookie('120588011307924', '06905be69e3290747a3e4c7c91ca1479');
     }
 
+    /**
+     * Reads the cookie and get facebook data if any.
+     */
     function _getFacebookCookie($app_id, $application_secret) {
         if (isset($_COOKIE['fbs_' . $app_id])) {
             $args = array();
@@ -188,7 +215,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * Logs in a user with OpenID, or the traditional way.
+     * Logs in a user with OpenID, Facebook, or the traditional way.
      */
     function login() {
 
@@ -196,26 +223,33 @@ class UsersController extends AppController {
             '/BuyAndSellOnline/users/login';
         $facebookCookie = $this->_facebook();
         $this->set('facebookCookie', $facebookCookie);
-        if ($facebookCookie != null && !$this->Session->check('User.Auth.id')) {
+        // If facebook cookie isn't null, use it to login.
+        // Otherwise, if there's any post data, check it.
+        // Otherwise, if there's any get data, login with OpenID.
+        if ($facebookCookie != null && !$this->Session->check('Auth.User.id')) {
+            // Check that there's some data.
             if (!empty($facebookCookie['uid'])) {
-                $user = $this->User->findByFacebookid($facebookCookie['uid']);
+                // Copy facebook id.
                 $data['facebookid'] = $facebookCookie['uid'];
+                // Get the user's data.
                 $user = json_decode(file_get_contents(
                             'https://graph.facebook.com/me?access_token=' .
                             $facebookCookie['access_token']));
                 $this->autoRender = false;
+                // Copy user's data.
                 $data['email'] = $user->email;
                 $name = explode(' ', $user->name);
                 $data['first_name'] = $name[0];
                 $data['last_name'] = $name[1];
+                // Create or update the user.
                 $this->_testUser($data);
                 $this->Session->setFlash(
                     'Successfully authenticated with Facebook.',
                     'default', array('class' => 'success'));
                 $this->redirect('/');
             }
-            // If data isn't empty, try to authenticate user using OpenID.
         } elseif (!empty($this->data)) {
+            // If Openid fields are set, try to authenticate using OpenID.
             if (!empty($this->data['OpenidUrl']['openid'])) {
                 try {
                     $this->Openid->authenticate(
@@ -244,6 +278,7 @@ class UsersController extends AppController {
             $sreg['openid'] = $_GET['openid_identity'];
             // New user becomes a member
             $sreg['group_id'] = 1;
+            // Create or update user.
             $this->_testUser($sreg);
             $this->Session->setFlash('Successfully authenticated with OpenID.',
                 'default', array('class' => 'success'));
@@ -254,8 +289,10 @@ class UsersController extends AppController {
 
     /**
      * Tests if the user has logged in before and log in the user.
+     * Creates new if not, updates otherwise.
      */
     function _testUser($data) {
+        // Check if it's openid or facebook.
         if (isset($data['openid'])) {
             $test = $this->User->findByOpenid($data['openid']);
         } elseif (isset($data['facebookid'])) {
@@ -275,7 +312,9 @@ class UsersController extends AppController {
         $this->Auth->login($id);
     }
 
-    // Recreate user given data.
+    /**
+     * Recreates user given data.
+     */
     function _recreate($data) {
         $this->data['User'] = $data;
         if (!empty($this->data['fullname'])) {
@@ -292,22 +331,24 @@ class UsersController extends AppController {
     function logout() {
         $this->Session->setFlash('Logged out.',
             'default', array('class' => 'success'));
-        $facebookCookie = $this->_facebook();
 
         $this->redirect($this->Auth->logout());
     }
 
     /**
-     * Sets privileges for different groups, should be made private in production
+     * Sets privileges for different groups, only works with debug at least 1.
      */
     function initDB() {
         if (!Configure::read('debug')) {
             return;
         }
+        // Build Acl and init groups.
         $this->build_acl();
         $this->requestAction(
             array('controller' => 'groups', 'action' => 'initGroups'));
 
+        // Set up permissions.
+        // Get a group model.
         $group =& $this->User->Group;
         // Administrators
         $group->id = 3;
@@ -340,6 +381,8 @@ class UsersController extends AppController {
         $this->Acl->allow($group, 'controllers/Users');
         $this->Acl->deny($group, 'controllers/Users/delete');
 
+
+        // Add some test users. All users have their username as password.
         $data = array(0 => array('User' => array('username' => 'test1',
                                          'password' => '8c22cd0aea08642744734cea168df020aeb6b593',
                                          'email' => 'testone@mail.com',

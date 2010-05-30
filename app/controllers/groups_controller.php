@@ -8,8 +8,11 @@ class GroupsController extends AppController {
         $this->Auth->allowedActions = array('index', 'view', 'initGroups');
     }
 
+    /**
+     * Gets a list of all groups.
+     */
     function index() {
-	$this->set('groups', $this->Group->find('all'));
+        $this->set('groups', $this->Group->find('all'));
     }
 
     /**
@@ -60,7 +63,7 @@ class GroupsController extends AppController {
     function delete($id) {
         $this->Group->delete($id);
         $this->Session->setFlash('The group has been deleted.');
-        $this->redirect(array('action' => 'edit'));
+        $this->redirect('/groups/edit');
     }
 
     /**
