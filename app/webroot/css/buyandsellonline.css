@@ -76,7 +76,7 @@ input[type="submit"]:hover,input[type="button"]:hover {
 }
 
 /* Dates, seller etc should be italic */
-.item div {
+.item div,.seller,.itemCreated,.itemCategory,.itemPrice {
     font-style: italic;
 }
 

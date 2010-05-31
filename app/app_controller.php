@@ -24,7 +24,7 @@ class AppController extends Controller {
     function beforeFilter() {
         parent::beforeFilter();
         // Required to be at least 1 to run users/initDB to setup Acl
-        Configure::write('debug', 2);
+        Configure::write('debug', 0);
         $this->_configure();
         $this->_checkAjax();
         $this->_setUpAuth();

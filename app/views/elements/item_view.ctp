@@ -48,10 +48,10 @@ $category = $ajax->link($item['Category']['name'],
                 $item['Category']['id']),
             array('update' => 'content', 'indicator' => 'spinner'));
 
-echo $html->div(null, 'Created: ' . $created . $modified);
-echo $html->div(null, 'Category: ' . $category);
+echo $html->div('itemCreated', 'Created: ' . $created . $modified);
+echo $html->div('itemCategory', 'Category: ' . $category);
 echo $html->para(null, $item['Item']['description']);
-echo $html->div(null, $number->currency($item['Item']['price'], 'USD'));
+echo $html->div('itemPrice', $number->currency($item['Item']['price'], 'USD'));
 // If user is logged in and doesn't own the item, show a buy link.
 // If a user is logged in and owns the item, show edit/delete links.
 if ($loggedIn) {
